@@ -52,7 +52,19 @@ describe('parseTimetableCsv', () => {
     const nastia = slots.find((slot) => slot.artist === 'Nastia')
     const pachanga = slots.find((slot) => slot.artist === 'Pachanga Boys')
 
-    expect(nastia?.endTime).toEqual(new Date('2026-06-20T07:00:00'))
+    expect(nastia?.endTime).toEqual(new Date('2026-06-19T07:00:00'))
     expect(pachanga?.endTime).toEqual(new Date('2026-06-18T02:00:00'))
+  })
+
+  it('keeps after-midnight slots on the correct calendar start time', () => {
+    const content = readFileSync(csvPath, 'utf-8')
+    const slots = parseTimetableCsv(content)
+
+    const oscar = slots.find((slot) => slot.artist === 'Oscar Mulero')
+    const cari = slots.find((slot) => slot.artist === 'Cari Lekebusch')
+
+    expect(oscar?.startTime).toEqual(new Date('2026-06-19T01:00:00'))
+    expect(cari?.startTime).toEqual(new Date('2026-06-19T20:00:00'))
+    expect(oscar!.startTime.getTime()).toBeLessThan(cari!.startTime.getTime())
   })
 })

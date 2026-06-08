@@ -1,3 +1,9 @@
+import {
+  FESTIVAL_DAYS,
+  getFestivalDayForTime,
+  getFestivalDayWindow,
+} from '@timetable/server/festival-day'
+
 export type TimetableEvent = {
   id: string
   artist: string
@@ -43,11 +49,32 @@ export function sortStages(stages: string[]): string[] {
   })
 }
 
-export function getTimelineRange(events: TimetableEvent[]) {
-  const starts = events.map((event) => new Date(event.startTime).getTime())
-  const ends = events.map((event) => new Date(event.endTime).getTime())
-  const rangeStart = Math.min(...starts)
-  const rangeEnd = Math.max(...ends)
+type TimelineRangeOptions = {
+  trimStart?: boolean
+  trimEnd?: boolean
+}
+
+export function getFestivalDayTimelineRange(
+  day: string,
+  events: TimetableEvent[] = [],
+  options: TimelineRangeOptions = {},
+) {
+  const { start, end } = getFestivalDayWindow(day)
+  let rangeStart = start.getTime()
+  let rangeEnd = end.getTime()
+
+  if (events.length > 0) {
+    const starts = events.map((event) => new Date(event.startTime).getTime())
+    const ends = events.map((event) => new Date(event.endTime).getTime())
+
+    if (options.trimStart) {
+      rangeStart = Math.max(rangeStart, Math.min(...starts))
+    }
+
+    if (options.trimEnd) {
+      rangeEnd = Math.min(rangeEnd, Math.max(...ends))
+    }
+  }
 
   return {
     rangeStart,
@@ -114,15 +141,22 @@ export function eventsForStage(
 export function groupEventsByDay(
   events: TimetableEvent[],
 ): Map<string, TimetableEvent[]> {
-  const groups = new Map<string, TimetableEvent[]>()
+  const groups = new Map<string, TimetableEvent[]>(
+    FESTIVAL_DAYS.map((day) => [day, []]),
+  )
 
   for (const event of events) {
-    const dayEvents = groups.get(event.festivalDay) ?? []
-    dayEvents.push(event)
-    groups.set(event.festivalDay, dayEvents)
+    const day = getFestivalDayForTime(new Date(event.startTime))
+    if (!day) continue
+    groups.get(day)!.push(event)
   }
 
-  return groups
+  return new Map(
+    FESTIVAL_DAYS.filter((day) => groups.get(day)!.length > 0).map((day) => [
+      day,
+      groups.get(day)!,
+    ]),
+  )
 }
 
 export function formatSlotTime(time: number): string {

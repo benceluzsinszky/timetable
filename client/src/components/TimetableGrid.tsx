@@ -4,7 +4,7 @@ import {
   eventPlacement,
   eventsForStage,
   formatSlotTime,
-  getTimelineRange,
+  getFestivalDayTimelineRange,
   timelineHeightPx,
 } from '../lib/timetable-grid'
 
@@ -69,6 +69,7 @@ function DayTimeline({
   dayLabel,
   onToggleFavourite,
   isFirst,
+  isLast,
 }: {
   stages: string[]
   events: TimetableEvent[]
@@ -76,8 +77,13 @@ function DayTimeline({
   dayLabel: string
   onToggleFavourite: (eventId: string) => void
   isFirst: boolean
+  isLast: boolean
 }) {
-  const { rangeStart, rangeEnd, durationMs } = getTimelineRange(events)
+  const { rangeStart, rangeEnd, durationMs } = getFestivalDayTimelineRange(
+    dayLabel,
+    events,
+    { trimStart: isFirst, trimEnd: isLast },
+  )
   const height = timelineHeightPx(durationMs)
   const markers = buildTimeMarkers(rangeStart, rangeEnd, durationMs, height)
 
@@ -217,6 +223,7 @@ export function TimetableGrid({
           dayLabel={block.label}
           onToggleFavourite={onToggleFavourite}
           isFirst={index === 0}
+          isLast={index === nonEmptyBlocks.length - 1}
         />
       ))}
     </div>

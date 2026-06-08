@@ -62,7 +62,7 @@ function resolveStartTimes(rows: TimetableRow[]): Date[] {
 
   for (const indices of indicesByStage.values()) {
     const sorted = [...indices].sort(
-      (a, b) => festivalSortKey(rows[a]!) - festivalSortKey(rows[b]!),
+      (a, b) => dateTimeSortKey(rows[a]!) - dateTimeSortKey(rows[b]!),
     )
 
     let lastStart: Date | null = null
@@ -93,16 +93,8 @@ function resolveSlotEndTime(row: TimetableRow, start: Date): Date {
   return end
 }
 
-function festivalSortKey(row: TimetableRow): number {
-  const base = new Date(`${row.date}T00:00:00`).getTime()
-  const [hours, minutes] = row.time.split(':').map(Number)
-  let dayMinutes = hours! * 60 + minutes!
-
-  if (hours! < 8) {
-    dayMinutes += 24 * 60
-  }
-
-  return base + dayMinutes * 60_000
+function dateTimeSortKey(row: TimetableRow): number {
+  return new Date(`${row.date}T${row.time}:00`).getTime()
 }
 
 function groupIndicesByStage(rows: TimetableRow[]): Map<string, number[]> {

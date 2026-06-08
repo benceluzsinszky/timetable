@@ -5,6 +5,7 @@ import { fileURLToPath } from 'node:url'
 import { PrismaPg } from '@prisma/adapter-pg'
 import type { Prisma } from './generated/prisma/client.js'
 import { PrismaClient } from './generated/prisma/client.js'
+import { getFestivalDayForTime } from './lib/festival-day.js'
 import { parseTimetableCsv } from './lib/parse-timetable.js'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
@@ -26,7 +27,7 @@ async function main() {
   const data: Prisma.EventCreateManyInput[] = slots.map((slot) => ({
     artist: slot.artist,
     stage: slot.stage,
-    festivalDay: slot.day,
+    festivalDay: getFestivalDayForTime(slot.startTime) ?? slot.day,
     startTime: slot.startTime,
     endTime: slot.endTime,
     notes: slot.notes,

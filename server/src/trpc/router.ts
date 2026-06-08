@@ -1,4 +1,5 @@
 import { z } from 'zod'
+import { FESTIVAL_DAYS, getFestivalDayWindow } from '../lib/festival-day.js'
 import { publicProcedure, router } from './trpc.js'
 
 const STAGE_ORDER = [
@@ -37,10 +38,21 @@ export const appRouter = router({
           .optional(),
       )
       .query(async ({ ctx, input }) => {
+        const festivalDayWindow = input?.festivalDay
+          ? getFestivalDayWindow(input.festivalDay)
+          : null
+
         return ctx.prisma.event.findMany({
           where: {
             ...(input?.stage ? { stage: input.stage } : {}),
-            ...(input?.festivalDay ? { festivalDay: input.festivalDay } : {}),
+            ...(festivalDayWindow
+              ? {
+                  startTime: {
+                    gte: festivalDayWindow.start,
+                    lt: festivalDayWindow.end,
+                  },
+                }
+              : {}),
           },
           orderBy: { startTime: 'asc' },
           include: {
@@ -60,14 +72,7 @@ export const appRouter = router({
       return sortStageNames(rows.map((row) => row.stage))
     }),
 
-    days: publicProcedure.query(async ({ ctx }) => {
-      const rows = await ctx.prisma.event.findMany({
-        distinct: ['festivalDay'],
-        select: { festivalDay: true, startTime: true },
-        orderBy: { startTime: 'asc' },
-      })
-      return rows.map((row) => row.festivalDay)
-    }),
+    days: publicProcedure.query(() => [...FESTIVAL_DAYS]),
   }),
 
   favourites: router({

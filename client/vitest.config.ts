@@ -15,6 +15,10 @@ export default mergeConfig(
           __dirname,
           '../server/src/trpc/router.ts',
         ),
+        '@timetable/server/festival-day': path.resolve(
+          __dirname,
+          '../server/src/lib/festival-day.ts',
+        ),
       },
     },
   }),
