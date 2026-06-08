@@ -39,53 +39,52 @@ function App() {
   }, [events.data])
 
   return (
-    <div className="mx-auto flex h-svh w-full max-w-[1400px] flex-col gap-4 overflow-hidden p-4 md:gap-5 md:p-6">
-      <header className="shrink-0 space-y-1">
-        <p className="text-sm font-medium tracking-wide text-primary uppercase">
+    <div className="mx-auto flex h-svh w-full max-w-[1400px] flex-col gap-3 overflow-hidden p-4 md:p-6">
+      <header className="flex shrink-0 items-center justify-between gap-4">
+        <h1 className="text-3xl font-semibold tracking-tight text-primary md:text-4xl">
           DAAD 2026
-        </p>
-        <h1 className="text-3xl font-semibold tracking-tight">Timetable</h1>
+        </h1>
+
+        <div className="flex shrink-0 items-center gap-2">
+          <Select
+            value={festivalDay ?? ALL_DAYS}
+            onValueChange={(value) =>
+              setFestivalDay(!value || value === ALL_DAYS ? undefined : value)
+            }
+          >
+            <SelectTrigger size="sm" className="w-[132px]">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value={ALL_DAYS}>All days</SelectItem>
+              {days.data?.map((day) => (
+                <SelectItem key={day} value={day}>
+                  {day}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+
+          <Select
+            value={stageFilter ?? ALL_STAGES}
+            onValueChange={(value) =>
+              setStageFilter(!value || value === ALL_STAGES ? undefined : value)
+            }
+          >
+            <SelectTrigger size="sm" className="w-[148px]">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value={ALL_STAGES}>All stages</SelectItem>
+              {stages.data?.map((value) => (
+                <SelectItem key={value} value={value}>
+                  {value}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
       </header>
-
-      <section className="flex shrink-0 flex-wrap gap-3">
-        <Select
-          value={festivalDay ?? ALL_DAYS}
-          onValueChange={(value) =>
-            setFestivalDay(!value || value === ALL_DAYS ? undefined : value)
-          }
-        >
-          <SelectTrigger className="w-[160px]">
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value={ALL_DAYS}>All days</SelectItem>
-            {days.data?.map((day) => (
-              <SelectItem key={day} value={day}>
-                {day}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-
-        <Select
-          value={stageFilter ?? ALL_STAGES}
-          onValueChange={(value) =>
-            setStageFilter(!value || value === ALL_STAGES ? undefined : value)
-          }
-        >
-          <SelectTrigger className="w-[180px]">
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value={ALL_STAGES}>All stages</SelectItem>
-            {stages.data?.map((value) => (
-              <SelectItem key={value} value={value}>
-                {value}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-      </section>
 
       {events.isLoading && (
         <p className="text-sm text-muted-foreground">Loading timetable…</p>
