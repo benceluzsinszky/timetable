@@ -4,13 +4,15 @@ WORKDIR /app
 
 COPY client/package.json client/package-lock.json ./client/
 COPY server/package.json server/package-lock.json ./server/
-COPY server/src/trpc ./server/src/trpc
-COPY server/src/lib/festival-day.ts ./server/src/lib/festival-day.ts
 
-RUN cd client && npm ci
+RUN cd client && npm ci && cd ../server && npm ci
 
+COPY server ./server
 COPY client ./client
 
+# prisma generate reads DATABASE_URL from config but does not connect to the DB
+ENV DATABASE_URL="postgresql://timetable:timetable@localhost:5432/timetable?schema=public"
+RUN cd server && npm run db:generate
 RUN cd client && npm run build
 
 FROM node:22-bookworm-slim AS server-build
