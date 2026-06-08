@@ -1,3 +1,5 @@
+import { parseFestivalDateTime } from './festival-day.js'
+
 export type TimetableRow = {
   date: string
   day: string
@@ -69,7 +71,7 @@ function resolveStartTimes(rows: TimetableRow[]): Date[] {
 
     for (const index of sorted) {
       const row = rows[index]!
-      const start = new Date(`${row.date}T${row.time}:00`)
+      const start = parseFestivalDateTime(row.date, row.time)
 
       if (lastStart && start <= lastStart) {
         start.setDate(start.getDate() + 1)
@@ -84,7 +86,7 @@ function resolveStartTimes(rows: TimetableRow[]): Date[] {
 }
 
 function resolveSlotEndTime(row: TimetableRow, start: Date): Date {
-  const end = new Date(`${row.date}T${row.endTime}:00`)
+  const end = parseFestivalDateTime(row.date, row.endTime)
 
   if (end <= start) {
     end.setDate(end.getDate() + 1)
@@ -94,7 +96,7 @@ function resolveSlotEndTime(row: TimetableRow, start: Date): Date {
 }
 
 function dateTimeSortKey(row: TimetableRow): number {
-  return new Date(`${row.date}T${row.time}:00`).getTime()
+  return parseFestivalDateTime(row.date, row.time).getTime()
 }
 
 function groupIndicesByStage(rows: TimetableRow[]): Map<string, number[]> {

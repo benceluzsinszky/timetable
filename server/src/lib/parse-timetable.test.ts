@@ -2,6 +2,7 @@ import { readFileSync } from 'node:fs'
 import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { describe, expect, it } from 'vitest'
+import { parseFestivalDateTime } from './festival-day.js'
 import { parseTimetableCsv } from './parse-timetable.js'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
@@ -18,7 +19,10 @@ describe('parseTimetableCsv', () => {
       stage: 'Cooking Groove',
       day: 'Wednesday',
     })
-    expect(slots[0]!.endTime).toEqual(new Date('2026-06-17T23:00:00'))
+    expect(slots[0]!.endTime).toEqual(
+      parseFestivalDateTime('2026-06-17', '23:00'),
+    )
+    expect(slots[0]!.startTime.toISOString()).toBe('2026-06-17T19:00:00.000Z')
   })
 
   it('normalizes Am/Beach to AM/Beach', () => {
@@ -52,8 +56,12 @@ describe('parseTimetableCsv', () => {
     const nastia = slots.find((slot) => slot.artist === 'Nastia')
     const pachanga = slots.find((slot) => slot.artist === 'Pachanga Boys')
 
-    expect(nastia?.endTime).toEqual(new Date('2026-06-19T07:00:00'))
-    expect(pachanga?.endTime).toEqual(new Date('2026-06-18T02:00:00'))
+    expect(nastia?.endTime).toEqual(
+      parseFestivalDateTime('2026-06-19', '07:00'),
+    )
+    expect(pachanga?.endTime).toEqual(
+      parseFestivalDateTime('2026-06-18', '02:00'),
+    )
   })
 
   it('keeps after-midnight slots on the correct calendar start time', () => {
@@ -63,8 +71,12 @@ describe('parseTimetableCsv', () => {
     const oscar = slots.find((slot) => slot.artist === 'Oscar Mulero')
     const cari = slots.find((slot) => slot.artist === 'Cari Lekebusch')
 
-    expect(oscar?.startTime).toEqual(new Date('2026-06-19T01:00:00'))
-    expect(cari?.startTime).toEqual(new Date('2026-06-19T20:00:00'))
+    expect(oscar?.startTime).toEqual(
+      parseFestivalDateTime('2026-06-19', '01:00'),
+    )
+    expect(cari?.startTime).toEqual(
+      parseFestivalDateTime('2026-06-19', '20:00'),
+    )
     expect(oscar!.startTime.getTime()).toBeLessThan(cari!.startTime.getTime())
   })
 })

@@ -1,3 +1,4 @@
+import { parseFestivalDateTime } from '@timetable/server/festival-day'
 import { describe, expect, it } from 'vitest'
 import {
   buildTimeMarkers,
@@ -13,8 +14,8 @@ const events = [
     artist: 'A',
     stage: 'DAAD Stage',
     festivalDay: 'Friday',
-    startTime: new Date('2026-06-19T12:00:00'),
-    endTime: new Date('2026-06-19T13:00:00'),
+    startTime: parseFestivalDateTime('2026-06-19', '12:00'),
+    endTime: parseFestivalDateTime('2026-06-19', '13:00'),
     notes: null,
   },
   {
@@ -22,8 +23,8 @@ const events = [
     artist: 'B',
     stage: 'The Dome',
     festivalDay: 'Friday',
-    startTime: new Date('2026-06-19T12:00:00'),
-    endTime: new Date('2026-06-19T13:00:00'),
+    startTime: parseFestivalDateTime('2026-06-19', '12:00'),
+    endTime: parseFestivalDateTime('2026-06-19', '13:00'),
     notes: null,
   },
   {
@@ -31,8 +32,8 @@ const events = [
     artist: 'C',
     stage: 'The Dome',
     festivalDay: 'Friday',
-    startTime: new Date('2026-06-19T12:30:00'),
-    endTime: new Date('2026-06-19T14:00:00'),
+    startTime: parseFestivalDateTime('2026-06-19', '12:30'),
+    endTime: parseFestivalDateTime('2026-06-19', '14:00'),
     notes: null,
   },
 ]
@@ -55,8 +56,8 @@ describe('timetable-grid', () => {
           artist: 'Vedat Akdağ',
           stage: 'Cooking Groove',
           festivalDay: 'Wednesday',
-          startTime: new Date('2026-06-17T21:00:00'),
-          endTime: new Date('2026-06-17T23:00:00'),
+          startTime: parseFestivalDateTime('2026-06-17', '21:00'),
+          endTime: parseFestivalDateTime('2026-06-17', '23:00'),
           notes: null,
         },
       ],
@@ -64,7 +65,7 @@ describe('timetable-grid', () => {
     )
 
     expect(wednesday.rangeStart).toEqual(
-      new Date('2026-06-17T21:00:00').getTime(),
+      parseFestivalDateTime('2026-06-17', '21:00').getTime(),
     )
 
     const sunday = getFestivalDayTimelineRange(
@@ -75,15 +76,17 @@ describe('timetable-grid', () => {
           artist: 'GusGus',
           stage: 'Dragon Nest',
           festivalDay: 'Sunday',
-          startTime: new Date('2026-06-21T21:30:00'),
-          endTime: new Date('2026-06-21T23:30:00'),
+          startTime: parseFestivalDateTime('2026-06-21', '21:30'),
+          endTime: parseFestivalDateTime('2026-06-21', '23:30'),
           notes: null,
         },
       ],
       { trimEnd: true },
     )
 
-    expect(sunday.rangeEnd).toEqual(new Date('2026-06-21T23:30:00').getTime())
+    expect(sunday.rangeEnd).toEqual(
+      parseFestivalDateTime('2026-06-21', '23:30').getTime(),
+    )
   })
 
   it('places event top at start time and height by duration', () => {
