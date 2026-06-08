@@ -1,0 +1,37 @@
+services:
+  postgres:
+    image: postgres:17
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-timetable}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in .env}
+      POSTGRES_DB: ${POSTGRES_DB:-timetable}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test:
+        [
+          'CMD-SHELL',
+          'pg_isready -U ${POSTGRES_USER:-timetable} -d ${POSTGRES_DB:-timetable}',
+        ]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  app:
+    build: .
+    restart: unless-stopped
+    ports:
+      - '${APP_PORT:-80}:3001'
+    environment:
+      NODE_ENV: production
+      PORT: 3001
+      DATABASE_URL: postgresql://${POSTGRES_USER:-timetable}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB:-timetable}?schema=public
+      CLIENT_ORIGIN: ${CLIENT_ORIGIN:-http://localhost}
+      CLIENT_DIST: /app/server/client-dist
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+volumes:
+  postgres_data:

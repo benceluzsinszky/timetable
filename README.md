@@ -71,6 +71,10 @@ cp server/.env.example server/.env
 └── docker-compose.yml
 ```
 
+## Deploy
+
+Production: **https://daad.benceluzsinszky.com** — see [DEPLOY.md](./DEPLOY.md) for DigitalOcean + Cloudflare + Caddy setup.
+
 ## Adding API endpoints
 
 Define procedures in `server/src/trpc/router.ts`. The client picks up types automatically:
