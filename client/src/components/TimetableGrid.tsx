@@ -17,6 +17,7 @@ import {
   timelineHeightPx,
 } from '../lib/timetable-grid'
 import { useEffect, useRef, useState } from 'react'
+import { useFavouriteIds } from '../lib/use-favourites'
 import { useMediaQuery } from '../lib/use-media-query'
 
 export type DayBlock = {
@@ -183,8 +184,8 @@ function EventCard({
   isMobile: boolean
   highlighted: boolean
 }) {
-  const favourited =
-    Array.isArray(event.favourites) && event.favourites.length > 0
+  const favouriteIds = useFavouriteIds()
+  const favourited = favouriteIds.has(event.id)
   const startMs = new Date(event.startTime).getTime()
   const endMs = new Date(event.endTime).getTime()
   const timeLabel = `${formatSlotTime(startMs)} – ${formatSlotTime(endMs)}`

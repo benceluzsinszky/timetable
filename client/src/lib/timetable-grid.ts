@@ -13,7 +13,6 @@ export type TimetableEvent = {
   startTime: string | Date
   endTime: string | Date
   notes: string | null
-  favourites?: { id: string }[] | false
 }
 
 export type TimeMarker = {

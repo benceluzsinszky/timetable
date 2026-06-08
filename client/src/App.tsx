@@ -1,17 +1,13 @@
 import { FESTIVAL_DAYS } from '@timetable/server/festival-day'
-import { useCallback, useMemo, useSyncExternalStore, useState } from 'react'
+import { useCallback, useMemo, useState } from 'react'
 import { ArtistSearch } from './components/ArtistSearch'
 import { FilterMultiSelect } from './components/FilterMultiSelect'
 import { TimetableGrid } from './components/TimetableGrid'
 import { Button } from '@/components/ui/button'
 import { filterEvents, getStagesFromEvents } from './lib/event-filters'
-import { isFavourited, toTimetableEvents } from './lib/events'
-import {
-  getFavouritesSnapshot,
-  subscribeFavourites,
-  toggleFavouriteId,
-  withLocalFavourites,
-} from './lib/favourites'
+import { toTimetableEvents } from './lib/events'
+import { isEventFavourited, toggleFavouriteId } from './lib/favourites'
+import { useFavouriteIds } from './lib/use-favourites'
 import type { TimetableEvent } from './lib/timetable-grid'
 import { DAY_STAGES, getStageShortName, NIGHT_STAGES } from './lib/stage-theme'
 import { groupEventsByDay, sortStages } from './lib/timetable-grid'
@@ -29,18 +25,14 @@ function App() {
   const [scrollToEventId, setScrollToEventId] = useState<string | null>(null)
 
   const isOnline = useOnlineStatus()
-  const favouriteSnapshot = useSyncExternalStore(
-    subscribeFavourites,
-    getFavouritesSnapshot,
-  )
+  const favouriteIds = useFavouriteIds()
 
   const eventsQuery = trpc.events.list.useQuery({})
-  const syncFavourite = trpc.favourites.toggle.useMutation()
 
-  const allEvents = useMemo(() => {
-    void favouriteSnapshot
-    return withLocalFavourites(toTimetableEvents(eventsQuery.data))
-  }, [eventsQuery.data, favouriteSnapshot])
+  const allEvents = useMemo(
+    () => toTimetableEvents(eventsQuery.data),
+    [eventsQuery.data],
+  )
 
   const filteredEvents = useMemo(
     () =>
@@ -53,8 +45,10 @@ function App() {
 
   const displayEvents = useMemo(
     () =>
-      showMyTimetable ? filteredEvents.filter(isFavourited) : filteredEvents,
-    [filteredEvents, showMyTimetable],
+      showMyTimetable
+        ? filteredEvents.filter((event) => favouriteIds.has(event.id))
+        : filteredEvents,
+    [filteredEvents, showMyTimetable, favouriteIds],
   )
 
   const stageOptions = useMemo(
@@ -94,7 +88,7 @@ function App() {
 
   const handleSearchSelect = useCallback(
     (event: TimetableEvent) => {
-      if (showMyTimetable && !isFavourited(event)) {
+      if (showMyTimetable && !isEventFavourited(event.id)) {
         setShowMyTimetable(false)
       }
 
@@ -222,10 +216,7 @@ function App() {
                 showDayColumn
                 scrollToEventId={scrollToEventId}
                 onScrolledToEvent={() => setScrollToEventId(null)}
-                onToggleFavourite={(eventId) => {
-                  toggleFavouriteId(eventId)
-                  syncFavourite.mutate({ eventId })
-                }}
+                onToggleFavourite={toggleFavouriteId}
               />
             </div>
           )}

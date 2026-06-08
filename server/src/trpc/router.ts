@@ -56,11 +56,6 @@ export const appRouter = router({
               : {}),
           },
           orderBy: { startTime: 'asc' },
-          include: {
-            favourites: ctx.sessionId
-              ? { where: { sessionId: ctx.sessionId }, select: { id: true } }
-              : false,
-          },
         })
       }),
 
@@ -74,35 +69,6 @@ export const appRouter = router({
     }),
 
     days: publicProcedure.query(() => [...FESTIVAL_DAYS]),
-  }),
-
-  favourites: router({
-    toggle: publicProcedure
-      .input(z.object({ eventId: z.string() }))
-      .mutation(async ({ ctx, input }) => {
-        if (!ctx.sessionId) {
-          throw new Error('Missing session ID')
-        }
-
-        const existing = await ctx.prisma.favourite.findUnique({
-          where: {
-            sessionId_eventId: {
-              sessionId: ctx.sessionId,
-              eventId: input.eventId,
-            },
-          },
-        })
-
-        if (existing) {
-          await ctx.prisma.favourite.delete({ where: { id: existing.id } })
-          return { favourited: false }
-        }
-
-        await ctx.prisma.favourite.create({
-          data: { sessionId: ctx.sessionId, eventId: input.eventId },
-        })
-        return { favourited: true }
-      }),
   }),
 })
 

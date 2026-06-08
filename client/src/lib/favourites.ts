@@ -1,5 +1,4 @@
-import type { TimetableEvent } from './timetable-grid'
-
+// Per-browser favourites in localStorage — no accounts, no server sync.
 const FAVOURITES_KEY = 'timetable-favourites'
 
 const listeners = new Set<() => void>()
@@ -50,15 +49,4 @@ export function toggleFavouriteId(eventId: string): boolean {
   localStorage.setItem(FAVOURITES_KEY, JSON.stringify([...ids]))
   emitChange()
   return favourited
-}
-
-export function withLocalFavourites(
-  events: TimetableEvent[],
-): TimetableEvent[] {
-  const favouriteIds = new Set(getFavouriteIds())
-
-  return events.map((event) => ({
-    ...event,
-    favourites: favouriteIds.has(event.id) ? [{ id: 'local' }] : [],
-  }))
 }

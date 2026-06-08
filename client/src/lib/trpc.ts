@@ -3,7 +3,6 @@ import { httpBatchLink } from '@trpc/client'
 import { createTRPCReact } from '@trpc/react-query'
 import type { inferRouterOutputs } from '@trpc/server'
 import type { AppRouter } from '@timetable/server/trpc'
-import { getSessionId } from './session'
 
 export type RouterOutputs = inferRouterOutputs<AppRouter>
 export type EventListItem = RouterOutputs['events']['list'][number]
@@ -35,12 +34,5 @@ export const offlineCacheOptions = {
 } as const
 
 export const trpcClient = trpc.createClient({
-  links: [
-    httpBatchLink({
-      url: '/trpc',
-      headers() {
-        return { 'x-session-id': getSessionId() }
-      },
-    }),
-  ],
+  links: [httpBatchLink({ url: '/trpc' })],
 })

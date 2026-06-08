@@ -1,19 +1,13 @@
 import { describe, expect, it, vi } from 'vitest'
 import { appRouter } from './router.js'
 
-function createCaller(sessionId?: string) {
+function createCaller() {
   return appRouter.createCaller({
     prisma: {
       event: {
         findMany: vi.fn().mockResolvedValue([]),
       },
-      favourite: {
-        findUnique: vi.fn(),
-        delete: vi.fn(),
-        create: vi.fn(),
-      },
     },
-    sessionId,
   })
 }
 
@@ -26,11 +20,16 @@ describe('appRouter', () => {
     expect(result.timestamp).toBeTypeOf('string')
   })
 
-  it('favourites.toggle requires a session id', async () => {
+  it('events.days returns festival days', async () => {
     const caller = createCaller()
 
-    await expect(
-      caller.favourites.toggle({ eventId: 'event-1' }),
-    ).rejects.toThrow('Missing session ID')
+    expect(await caller.events.days()).toEqual([
+      'Wednesday',
+      'Thursday',
+      'Friday',
+      'Saturday',
+      'Sunday',
+      'Monday',
+    ])
   })
 })
