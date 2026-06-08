@@ -1,6 +1,7 @@
 import { Badge } from '@/components/ui/badge'
 import { Card } from '@/components/ui/card'
 import { cn } from '@/lib/utils'
+import { getStageTheme, type StageTheme } from '../lib/stage-theme'
 import type { TimeMarker, TimetableEvent } from '../lib/timetable-grid'
 import {
   buildTimeMarkers,
@@ -37,7 +38,7 @@ function gridTemplateColumns(
     : `${TIME_COLUMN_WIDTH} ${stageColumns}`
 }
 
-const GRID_LINE_CLASS = 'border-t border-border'
+const GRID_LINE_CLASS = 'border-t border-foreground/15'
 
 function TimeMarkersColumn({
   markers,
@@ -50,7 +51,7 @@ function TimeMarkersColumn({
 }) {
   return (
     <div
-      className="relative border-r border-border bg-muted/30"
+      className="relative border-r border-foreground/15 bg-black/20"
       style={{ height }}
     >
       {markers.map((marker) => {
@@ -65,7 +66,7 @@ function TimeMarkersColumn({
             )}
             style={{ top: isRangeEnd ? height : marker.topPx }}
           >
-            <span className="text-[10px] font-medium text-foreground/70 tabular-nums">
+            <span className="text-[10px] font-medium tracking-wide text-foreground/60 uppercase tabular-nums">
               {formatSlotTime(marker.time)}
             </span>
           </div>
@@ -106,10 +107,12 @@ function HourGridLines({
 
 function EventCard({
   event,
+  stageTheme,
   onToggleFavourite,
   compact,
 }: {
   event: TimetableEvent
+  stageTheme: StageTheme
   onToggleFavourite: (eventId: string) => void
   compact: boolean
 }) {
@@ -130,11 +133,21 @@ function EventCard({
           : `Add ${event.artist} to favourites`
       }
       className={cn(
-        'h-full cursor-pointer gap-1 rounded-sm border py-2 ring-0 shadow-none transition-[background-color,filter,box-shadow,border-color] [--card-spacing:--spacing(2)] focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none',
-        favourited
-          ? 'border-primary bg-primary text-primary-foreground shadow-md hover:brightness-95 hover:shadow-lg active:brightness-90 active:shadow-md'
-          : 'border-violet-300/50 bg-card hover:bg-secondary active:bg-muted',
+        'h-full cursor-pointer gap-0.5 rounded-none border py-1.5 ring-0 transition-[background-color,filter,box-shadow,border-color] [--card-spacing:--spacing(2)] focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none',
+        !favourited &&
+          'border-foreground/15 bg-black/40 shadow-none hover:bg-black/55 active:bg-black/65',
+        favourited && 'hover:brightness-105 active:brightness-95',
       )}
+      style={
+        favourited
+          ? {
+              backgroundColor: stageTheme.favourited,
+              borderColor: stageTheme.favouritedBorder,
+              boxShadow:
+                'inset 0 0 0 1px color-mix(in oklch, var(--foreground) 14%, transparent)',
+            }
+          : undefined
+      }
       onClick={() => onToggleFavourite(event.id)}
       onKeyDown={(e) => {
         if (e.key === 'Enter' || e.key === ' ') {
@@ -146,18 +159,18 @@ function EventCard({
       <div className="min-h-0 flex-1 space-y-1 overflow-hidden px-2">
         <p
           className={cn(
-            'font-medium leading-tight',
-            compact ? 'text-xs' : 'text-sm',
-            favourited && 'font-semibold',
+            'leading-tight tracking-wide uppercase',
+            compact ? 'text-[11px]' : 'text-xs',
+            favourited ? 'font-semibold' : 'font-medium',
           )}
         >
           {event.artist}
         </p>
         <p
           className={cn(
-            'tabular-nums leading-tight',
-            compact ? 'text-[10px]' : 'text-xs',
-            favourited ? 'text-primary-foreground/85' : 'text-muted-foreground',
+            'font-medium tracking-wide uppercase tabular-nums leading-tight',
+            compact ? 'text-[9px]' : 'text-[10px]',
+            favourited ? 'text-foreground/75' : 'text-foreground/50',
           )}
         >
           {timeLabel}
@@ -166,9 +179,10 @@ function EventCard({
           <Badge
             variant="secondary"
             className={cn(
-              'h-4 px-1.5 text-[10px]',
-              favourited &&
-                'border-primary-foreground/25 bg-primary-foreground/15 text-primary-foreground',
+              'h-4 rounded-none border px-1.5 text-[9px] tracking-wide uppercase',
+              favourited
+                ? 'border-foreground/20 bg-black/20 text-foreground/80'
+                : 'border-foreground/15 bg-foreground/8 text-foreground/70',
             )}
           >
             {event.notes}
@@ -208,18 +222,18 @@ function DayTimeline({
 
   return (
     <div
-      className={cn('grid w-full', !isFirst && 'border-t border-border')}
+      className={cn('grid w-full', !isFirst && 'border-t border-foreground/20')}
       style={{
         gridTemplateColumns: gridTemplateColumns(showDayColumn, stages.length),
       }}
     >
       {showDayColumn && (
         <div
-          className="relative border-r border-border bg-primary/5"
+          className="relative border-r border-foreground/15 bg-black/25"
           style={{ height }}
         >
-          <div className="sticky top-0 z-10 bg-primary/10 px-2 py-2 shadow-[0_1px_0_0_var(--border)]">
-            <span className="text-xs font-semibold text-primary">
+          <div className="sticky top-0 z-10 bg-black/50 px-2 py-2 shadow-[0_1px_0_0_oklch(0.97_0.01_95/18%)]">
+            <span className="text-[11px] font-semibold tracking-[0.12em] text-foreground uppercase">
               {dayLabel}
             </span>
           </div>
@@ -234,12 +248,13 @@ function DayTimeline({
 
       {stages.map((stage) => {
         const stageEvents = eventsForStage(events, stage)
+        const stageTheme = getStageTheme(stage)
 
         return (
           <div
             key={stage}
-            className="relative border-l border-border bg-muted/15"
-            style={{ height }}
+            className="relative border-l border-foreground/15"
+            style={{ height, backgroundColor: stageTheme.column }}
           >
             <HourGridLines
               markers={markers}
@@ -263,6 +278,7 @@ function DayTimeline({
                 >
                   <EventCard
                     event={event}
+                    stageTheme={stageTheme}
                     onToggleFavourite={onToggleFavourite}
                     compact={heightPx < 40}
                   />
@@ -296,12 +312,12 @@ export function TimetableGrid({
   return (
     <div
       className={cn(
-        'flex min-h-0 flex-col overflow-hidden rounded-xl bg-card ring-1 ring-border',
+        'flex min-h-0 flex-col overflow-hidden rounded-none border border-foreground/20 bg-black/35',
         className,
       )}
     >
       <div
-        className="grid w-full shrink-0 border-b border-border bg-muted/95"
+        className="grid w-full shrink-0 border-b border-foreground/20 bg-black/55"
         style={{
           gridTemplateColumns: gridTemplateColumns(
             showDayColumn,
@@ -310,22 +326,27 @@ export function TimetableGrid({
         }}
       >
         {showDayColumn && (
-          <div className="border-r px-2 py-2 text-[10px] font-semibold tracking-wide text-muted-foreground uppercase">
+          <div className="border-r border-foreground/15 px-2 py-2.5 text-[10px] font-semibold tracking-[0.14em] text-foreground/50 uppercase">
             Day
           </div>
         )}
-        <div className="border-r px-2 py-2 text-[10px] font-semibold tracking-wide text-muted-foreground uppercase">
+        <div className="border-r border-foreground/15 px-2 py-2.5 text-[10px] font-semibold tracking-[0.14em] text-foreground/50 uppercase">
           Time
         </div>
-        {stages.map((stage) => (
-          <div
-            key={stage}
-            className="truncate border-l px-2 py-2 text-center text-[11px] font-semibold tracking-wide uppercase"
-            title={stage}
-          >
-            {stage}
-          </div>
-        ))}
+        {stages.map((stage) => {
+          const stageTheme = getStageTheme(stage)
+
+          return (
+            <div
+              key={stage}
+              className="truncate border-l border-foreground/15 px-2 py-2.5 text-center text-xs font-bold tracking-widest text-foreground uppercase"
+              style={{ backgroundColor: stageTheme.column }}
+              title={stage}
+            >
+              {stage}
+            </div>
+          )
+        })}
       </div>
 
       <div className="min-h-0 flex-1 overflow-y-auto">

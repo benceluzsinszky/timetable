@@ -7,6 +7,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
+import { toTimetableEvents } from './lib/events'
 import { groupEventsByDay, sortStages } from './lib/timetable-grid'
 import { trpc } from './lib/trpc'
 
@@ -31,7 +32,7 @@ function App() {
   }, [stages.data, stageFilter])
 
   const dayBlocks = useMemo(() => {
-    const grouped = groupEventsByDay(events.data ?? [])
+    const grouped = groupEventsByDay(toTimetableEvents(events.data))
     return [...grouped.entries()].map(([label, dayEvents]) => ({
       label,
       events: dayEvents,
@@ -39,82 +40,101 @@ function App() {
   }, [events.data])
 
   return (
-    <div className="mx-auto flex h-svh w-full max-w-[1400px] flex-col gap-3 overflow-hidden p-4 md:p-6">
-      <header className="flex shrink-0 items-center justify-between gap-4">
-        <h1 className="text-3xl font-semibold tracking-tight text-primary md:text-4xl">
-          DAAD 2026
-        </h1>
+    <div className="daad-app min-h-svh">
+      <div className="relative z-10 mx-auto flex h-svh w-full max-w-[1400px] flex-col gap-3 overflow-hidden p-4 md:p-6">
+        <header className="daad-frame flex shrink-0 items-end justify-between gap-4 pb-1">
+          <div className="space-y-0.5">
+            <h1 className="text-4xl font-bold tracking-[0.08em] text-foreground uppercase md:text-5xl">
+              DAAD 2026
+            </h1>
+            <p className="text-xs font-medium tracking-[0.18em] text-foreground/55 uppercase">
+              Dádpuszta · 17–22 June · Hungary
+            </p>
+          </div>
 
-        <div className="flex shrink-0 items-center gap-2">
-          <Select
-            value={festivalDay ?? ALL_DAYS}
-            onValueChange={(value) =>
-              setFestivalDay(!value || value === ALL_DAYS ? undefined : value)
-            }
-          >
-            <SelectTrigger size="sm" className="w-[132px]">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value={ALL_DAYS}>All days</SelectItem>
-              {days.data?.map((day) => (
-                <SelectItem key={day} value={day}>
-                  {day}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+          <div className="flex shrink-0 items-center gap-2">
+            <Select
+              value={festivalDay ?? ALL_DAYS}
+              onValueChange={(value) =>
+                setFestivalDay(!value || value === ALL_DAYS ? undefined : value)
+              }
+            >
+              <SelectTrigger
+                size="sm"
+                className="w-[132px] rounded-none border-foreground/20 bg-black/35 text-foreground uppercase"
+              >
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent className="rounded-none border-foreground/20 bg-card uppercase">
+                <SelectItem value={ALL_DAYS}>All days</SelectItem>
+                {days.data?.map((day) => (
+                  <SelectItem key={day} value={day}>
+                    {day}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
 
-          <Select
-            value={stageFilter ?? ALL_STAGES}
-            onValueChange={(value) =>
-              setStageFilter(!value || value === ALL_STAGES ? undefined : value)
-            }
-          >
-            <SelectTrigger size="sm" className="w-[148px]">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value={ALL_STAGES}>All stages</SelectItem>
-              {stages.data?.map((value) => (
-                <SelectItem key={value} value={value}>
-                  {value}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
-      </header>
+            <Select
+              value={stageFilter ?? ALL_STAGES}
+              onValueChange={(value) =>
+                setStageFilter(
+                  !value || value === ALL_STAGES ? undefined : value,
+                )
+              }
+            >
+              <SelectTrigger
+                size="sm"
+                className="w-[148px] rounded-none border-foreground/20 bg-black/35 text-foreground uppercase"
+              >
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent className="rounded-none border-foreground/20 bg-card uppercase">
+                <SelectItem value={ALL_STAGES}>All stages</SelectItem>
+                {stages.data?.map((value) => (
+                  <SelectItem key={value} value={value}>
+                    {value}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+        </header>
 
-      {events.isLoading && (
-        <p className="text-sm text-muted-foreground">Loading timetable…</p>
-      )}
-      {events.error && (
-        <p className="text-sm text-destructive">
-          Failed to load timetable. Run{' '}
-          <code className="rounded-md bg-muted px-1.5 py-0.5 text-sm">
-            ./scripts/seed.sh
-          </code>{' '}
-          after starting Postgres.
-        </p>
-      )}
-      {events.data?.length === 0 && (
-        <p className="text-sm text-muted-foreground">
-          No events match these filters.
-        </p>
-      )}
+        {events.isLoading && (
+          <p className="text-sm tracking-wide text-foreground/60 uppercase">
+            Loading timetable…
+          </p>
+        )}
+        {events.error && (
+          <p className="text-sm text-destructive">
+            Failed to load timetable. Run{' '}
+            <code className="rounded-none bg-black/35 px-1.5 py-0.5 text-sm">
+              ./scripts/seed.sh
+            </code>{' '}
+            after starting Postgres.
+          </p>
+        )}
+        {events.data?.length === 0 && (
+          <p className="text-sm tracking-wide text-foreground/60 uppercase">
+            No events match these filters.
+          </p>
+        )}
 
-      {events.data && events.data.length > 0 && (
-        <div className="min-h-0 flex-1">
-          <TimetableGrid
-            className="h-full"
-            stages={visibleStages}
-            dayBlocks={dayBlocks}
-            showDayColumn
-            onToggleFavourite={(eventId) => toggleFavourite.mutate({ eventId })}
-          />
-        </div>
-      )}
+        {events.data && events.data.length > 0 && (
+          <div className="daad-frame min-h-0 flex-1">
+            <TimetableGrid
+              className="h-full"
+              stages={visibleStages}
+              dayBlocks={dayBlocks}
+              showDayColumn
+              onToggleFavourite={(eventId) =>
+                toggleFavourite.mutate({ eventId })
+              }
+            />
+          </div>
+        )}
+      </div>
     </div>
   )
 }
