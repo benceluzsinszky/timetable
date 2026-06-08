@@ -16,7 +16,7 @@ import {
   MIN_TWO_LINE_EVENT_HEIGHT_PX,
   timelineHeightPx,
 } from '../lib/timetable-grid'
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { useMediaQuery } from '../lib/use-media-query'
 
 export type DayBlock = {
@@ -28,7 +28,6 @@ type TimetableGridProps = {
   stages: string[]
   dayBlocks: DayBlock[]
   favouriteIds: ReadonlySet<string>
-  favouritesRevision: number
   showDayColumn: boolean
   onToggleFavourite: (eventId: string) => void
   scrollToEventId?: string | null
@@ -58,8 +57,7 @@ function DayLabelBar({
   return (
     <div
       className={cn(
-        'sticky top-0 z-30 flex items-center justify-start border-b border-foreground/15 px-2 py-1 backdrop-blur-sm md:justify-center md:px-3 md:py-1.5',
-        SOFT_SURFACE_CLASS,
+        'sticky top-0 z-30 flex items-center justify-start border-b border-foreground/15 bg-background px-2 py-1 md:justify-center md:px-3 md:py-1.5',
         showTopBorder && 'border-t border-foreground/15',
       )}
     >
@@ -86,7 +84,7 @@ function gridMinWidth(
 
 const GRID_LINE_CLASS = 'border-t border-foreground/15'
 const SOFT_SURFACE_CLASS = 'bg-black/20'
-const HEADER_SURFACE_CLASS = 'bg-black/[0.01]'
+const HEADER_SURFACE_CLASS = 'bg-background'
 const SOFT_LABEL_CLASS =
   'font-medium text-foreground/60 uppercase tracking-wide'
 const STICKY_HEADER_HEIGHT_CLASS = 'h-8 md:h-9'
@@ -314,7 +312,11 @@ function DayTimeline({
   })
 
   return (
-    <div>
+    <div
+      data-day-block
+      className="timetable-day-block"
+      style={{ contentVisibility: 'visible' }}
+    >
       {showDayColumn && (
         <DayLabelBar label={dayLabel} showTopBorder={!isFirst} />
       )}
@@ -387,7 +389,6 @@ export function TimetableGrid({
   stages,
   dayBlocks,
   favouriteIds,
-  favouritesRevision,
   showDayColumn,
   onToggleFavourite,
   scrollToEventId,
@@ -402,6 +403,17 @@ export function TimetableGrid({
   const nonEmptyBlocks = dayBlocks.filter((block) => block.events.length > 0)
   const minWidth = gridMinWidth(stages.length, isMobile)
   const columns = gridTemplateColumns(stages.length, isMobile)
+
+  useLayoutEffect(() => {
+    const container = scrollContainerRef.current
+    if (!container) return
+
+    // Force layout/paint of the full scrollable timetable on mount and filter changes.
+    void container.scrollHeight
+    container.querySelectorAll('[data-day-block]').forEach((block) => {
+      void (block as HTMLElement).offsetHeight
+    })
+  }, [nonEmptyBlocks, stages, isMobile])
 
   useEffect(() => {
     if (!scrollToEventId) return
@@ -469,7 +481,7 @@ export function TimetableGrid({
         >
           <div
             className={cn(
-              'z-40 grid w-full shrink-0 border-b border-foreground/5 backdrop-blur-sm',
+              'z-40 grid w-full shrink-0 border-b border-foreground/5 bg-background',
               STICKY_HEADER_HEIGHT_CLASS,
             )}
             style={{ gridTemplateColumns: columns }}
@@ -512,7 +524,7 @@ export function TimetableGrid({
           >
             {nonEmptyBlocks.map((block, index) => (
               <DayTimeline
-                key={`${block.label}-${favouritesRevision}`}
+                key={block.label}
                 stages={stages}
                 events={block.events}
                 showDayColumn={showDayColumn}

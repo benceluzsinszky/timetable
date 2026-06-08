@@ -24,7 +24,7 @@ function App() {
   const [scrollToEventId, setScrollToEventId] = useState<string | null>(null)
 
   const isOnline = useOnlineStatus()
-  const { favouriteIds, revision, toggleFavourite } = useFavourites()
+  const { favouriteIds, toggleFavourite } = useFavourites()
 
   const eventsQuery = trpc.events.list.useQuery({})
 
@@ -203,7 +203,6 @@ function App() {
                 stages={visibleStages}
                 dayBlocks={dayBlocks}
                 favouriteIds={favouriteIds}
-                favouritesRevision={revision}
                 showDayColumn
                 scrollToEventId={scrollToEventId}
                 onScrolledToEvent={() => setScrollToEventId(null)}

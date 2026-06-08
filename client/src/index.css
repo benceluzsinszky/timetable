@@ -204,6 +204,11 @@
     bottom left;
 }
 
+.timetable-day-block {
+  content-visibility: visible;
+  contain: none;
+}
+
 .daad-corner-br {
   bottom: 0;
   right: 0;
