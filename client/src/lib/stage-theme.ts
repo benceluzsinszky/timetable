@@ -45,6 +45,18 @@ const FALLBACK_THEME: StageTheme = {
   favouritedBorder: 'var(--primary)',
 }
 
+const STAGE_SHORT_NAMES: Record<string, string> = {
+  'DAAD Stage': 'DAAD',
+  'The Dome': 'Dome',
+  'Dragon Nest': 'Dragon',
+  'Cooking Groove': 'Cooking',
+  'AM/Beach': 'Beach',
+}
+
 export function getStageTheme(stage: string): StageTheme {
   return STAGE_THEMES[stage] ?? FALLBACK_THEME
+}
+
+export function getStageShortName(stage: string): string {
+  return STAGE_SHORT_NAMES[stage] ?? stage
 }

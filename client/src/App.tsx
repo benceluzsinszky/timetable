@@ -67,29 +67,29 @@ function App() {
 
   return (
     <div className="daad-app min-h-svh">
-      <div className="daad-shell relative z-10 mx-auto flex h-svh w-full max-w-[1400px] flex-col gap-3 overflow-hidden p-4 md:p-6">
+      <div className="daad-shell relative z-10 mx-auto flex h-svh w-full max-w-[1400px] flex-col gap-2 overflow-hidden p-3 sm:gap-3 sm:p-4 md:p-6">
         <span aria-hidden className="daad-corner daad-corner-tl" />
         <span aria-hidden className="daad-corner daad-corner-tr" />
         <span aria-hidden className="daad-corner daad-corner-bl" />
         <span aria-hidden className="daad-corner daad-corner-br" />
 
-        <header className="flex shrink-0 items-end justify-between gap-4 pb-1">
+        <header className="flex shrink-0 flex-col gap-3 pb-1 md:flex-row md:items-end md:justify-between">
           <div className="space-y-0.5">
-            <h1 className="text-4xl font-bold tracking-[0.08em] text-foreground uppercase md:text-5xl">
+            <h1 className="text-3xl font-bold tracking-[0.08em] text-foreground uppercase sm:text-4xl md:text-5xl">
               DAAD 2026
             </h1>
-            <p className="text-xs font-medium tracking-[0.18em] text-foreground/55 uppercase">
+            <p className="text-[10px] font-medium tracking-[0.14em] text-foreground/55 uppercase sm:text-xs sm:tracking-[0.18em]">
               Dádpuszta · 17–22 June · Hungary
             </p>
           </div>
 
-          <div className="flex shrink-0 items-center gap-2">
+          <div className="flex flex-wrap items-center gap-2">
             <Button
               type="button"
               size="sm"
               variant={showMyTimetable ? 'default' : 'outline'}
               className={cn(
-                'rounded-none border-foreground/20 uppercase tracking-wide',
+                'rounded-none border-foreground/20 text-xs uppercase tracking-wide sm:text-sm',
                 !showMyTimetable &&
                   'bg-black/35 text-foreground hover:bg-black/50',
               )}
@@ -116,7 +116,7 @@ function App() {
             >
               <SelectTrigger
                 size="sm"
-                className="w-[132px] rounded-none border-foreground/20 bg-black/35 text-foreground uppercase"
+                className="w-[7.5rem] rounded-none border-foreground/20 bg-black/35 text-foreground uppercase sm:w-[132px]"
               >
                 <SelectValue />
               </SelectTrigger>
@@ -157,7 +157,7 @@ function App() {
             >
               <SelectTrigger
                 size="sm"
-                className="w-[148px] rounded-none border-foreground/20 bg-black/35 text-foreground uppercase"
+                className="w-[7.5rem] rounded-none border-foreground/20 bg-black/35 text-foreground uppercase sm:w-[148px]"
               >
                 <SelectValue />
               </SelectTrigger>
