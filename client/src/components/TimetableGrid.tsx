@@ -57,8 +57,9 @@ function DayLabelBar({
   return (
     <div
       className={cn(
-        'sticky top-0 z-30 flex items-center justify-start border-b border-foreground/15 px-2 py-1 backdrop-blur-sm md:justify-center md:px-3 md:py-1.5',
-        SOFT_SURFACE_CLASS,
+        'sticky top-0 z-30 flex items-center justify-start border-b border-foreground/15 px-2 py-1 md:justify-center md:px-3 md:py-1.5',
+        MOBILE_STICKY_SURFACE_CLASS,
+        DESKTOP_DAY_LABEL_SURFACE_CLASS,
         showTopBorder && 'border-t border-foreground/15',
       )}
     >
@@ -85,7 +86,11 @@ function gridMinWidth(
 
 const GRID_LINE_CLASS = 'border-t border-foreground/15'
 const SOFT_SURFACE_CLASS = 'bg-black/20'
-const HEADER_SURFACE_CLASS = 'bg-black/[0.01]'
+const MOBILE_STICKY_SURFACE_CLASS = 'bg-background/85'
+const DESKTOP_DAY_LABEL_SURFACE_CLASS = 'md:bg-black/20 md:backdrop-blur-sm'
+const DESKTOP_STAGE_HEADER_SURFACE_CLASS =
+  'md:bg-black/[0.01] md:backdrop-blur-sm'
+const HEADER_SURFACE_CLASS = 'bg-transparent md:bg-black/[0.01]'
 const SOFT_LABEL_CLASS =
   'font-medium text-foreground/60 uppercase tracking-wide'
 const STICKY_HEADER_HEIGHT_CLASS = 'h-8 md:h-9'
@@ -467,7 +472,9 @@ export function TimetableGrid({
         >
           <div
             className={cn(
-              'z-40 grid w-full shrink-0 border-b border-foreground/5 backdrop-blur-sm',
+              'z-40 grid w-full shrink-0 border-b border-foreground/5',
+              MOBILE_STICKY_SURFACE_CLASS,
+              DESKTOP_STAGE_HEADER_SURFACE_CLASS,
               STICKY_HEADER_HEIGHT_CLASS,
             )}
             style={{ gridTemplateColumns: columns }}
