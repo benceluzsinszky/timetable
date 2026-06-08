@@ -10,8 +10,8 @@ import {
 import { groupEventsByDay, sortStages } from './lib/timetable-grid'
 import { trpc } from './lib/trpc'
 
-const ALL_DAYS = 'all'
-const ALL_STAGES = 'all'
+const ALL_DAYS = 'All days'
+const ALL_STAGES = 'All stages'
 
 function App() {
   const [stageFilter, setStageFilter] = useState<string>()
