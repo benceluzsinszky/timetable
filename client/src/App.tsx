@@ -1,12 +1,21 @@
-import { useCallback, useMemo, useState } from 'react'
+import { FESTIVAL_DAYS } from '@timetable/server/festival-day'
+import { useCallback, useMemo, useSyncExternalStore, useState } from 'react'
 import { ArtistSearch } from './components/ArtistSearch'
 import { FilterMultiSelect } from './components/FilterMultiSelect'
 import { TimetableGrid } from './components/TimetableGrid'
 import { Button } from '@/components/ui/button'
+import { filterEvents, getStagesFromEvents } from './lib/event-filters'
 import { isFavourited, toTimetableEvents } from './lib/events'
+import {
+  getFavouritesSnapshot,
+  subscribeFavourites,
+  toggleFavouriteId,
+  withLocalFavourites,
+} from './lib/favourites'
 import type { TimetableEvent } from './lib/timetable-grid'
 import { DAY_STAGES, getStageShortName, NIGHT_STAGES } from './lib/stage-theme'
 import { groupEventsByDay, sortStages } from './lib/timetable-grid'
+import { useOnlineStatus } from './lib/use-online-status'
 import { trpc } from './lib/trpc'
 import { cn } from '@/lib/utils'
 
@@ -19,27 +28,38 @@ function App() {
   const [showMyTimetable, setShowMyTimetable] = useState(false)
   const [scrollToEventId, setScrollToEventId] = useState<string | null>(null)
 
-  const utils = trpc.useUtils()
-  const stages = trpc.events.stages.useQuery()
-  const days = trpc.events.days.useQuery()
-  const searchEventsQuery = trpc.events.list.useQuery({})
-  const events = trpc.events.list.useQuery({
-    festivalDays: festivalDays.length > 0 ? festivalDays : undefined,
-    stages: stageFilters.length > 0 ? stageFilters : undefined,
-  })
-  const toggleFavourite = trpc.favourites.toggle.useMutation({
-    onSuccess: () => utils.events.list.invalidate(),
-  })
+  const isOnline = useOnlineStatus()
+  const favouriteSnapshot = useSyncExternalStore(
+    subscribeFavourites,
+    getFavouritesSnapshot,
+  )
 
-  const allEvents = useMemo(() => toTimetableEvents(events.data), [events.data])
-  const searchableEvents = useMemo(
-    () => toTimetableEvents(searchEventsQuery.data),
-    [searchEventsQuery.data],
+  const eventsQuery = trpc.events.list.useQuery({})
+  const syncFavourite = trpc.favourites.toggle.useMutation()
+
+  const allEvents = useMemo(() => {
+    void favouriteSnapshot
+    return withLocalFavourites(toTimetableEvents(eventsQuery.data))
+  }, [eventsQuery.data, favouriteSnapshot])
+
+  const filteredEvents = useMemo(
+    () =>
+      filterEvents(allEvents, {
+        festivalDays,
+        stages: stageFilters,
+      }),
+    [allEvents, festivalDays, stageFilters],
   )
 
   const displayEvents = useMemo(
-    () => (showMyTimetable ? allEvents.filter(isFavourited) : allEvents),
-    [allEvents, showMyTimetable],
+    () =>
+      showMyTimetable ? filteredEvents.filter(isFavourited) : filteredEvents,
+    [filteredEvents, showMyTimetable],
+  )
+
+  const stageOptions = useMemo(
+    () => getStagesFromEvents(allEvents),
+    [allEvents],
   )
 
   const relevantStages = useMemo(() => {
@@ -47,8 +67,8 @@ function App() {
       return sortStages([...new Set(displayEvents.map((event) => event.stage))])
     }
 
-    return sortStages(stages.data ?? [])
-  }, [showMyTimetable, displayEvents, stages.data])
+    return stageOptions
+  }, [showMyTimetable, displayEvents, stageOptions])
 
   const visibleStages = useMemo(() => {
     if (stageFilters.length === 0) return relevantStages
@@ -113,7 +133,7 @@ function App() {
 
           <div className="flex flex-wrap items-center gap-2">
             <ArtistSearch
-              events={searchableEvents}
+              events={allEvents}
               onSelect={handleSearchSelect}
               className="w-[8.5rem] sm:w-40"
             />
@@ -134,7 +154,7 @@ function App() {
 
             <FilterMultiSelect
               emptyLabel={ALL_DAYS}
-              options={days.data ?? []}
+              options={[...FESTIVAL_DAYS]}
               selected={festivalDays}
               onChange={setFestivalDays}
               className="w-[7.5rem] sm:w-[132px]"
@@ -142,7 +162,7 @@ function App() {
 
             <FilterMultiSelect
               emptyLabel={ALL_STAGES}
-              options={stages.data ?? []}
+              options={stageOptions}
               selected={stageFilters}
               onChange={setStageFilters}
               getOptionLabel={getStageShortName}
@@ -155,24 +175,27 @@ function App() {
           </div>
         </header>
 
-        {events.isLoading && (
+        {!isOnline && (
+          <p className="text-[10px] font-medium tracking-[0.14em] text-foreground/50 uppercase sm:text-xs">
+            Offline · using saved timetable
+          </p>
+        )}
+
+        {eventsQuery.isLoading && !eventsQuery.data && (
           <p className="text-sm tracking-wide text-foreground/60 uppercase">
             Loading timetable…
           </p>
         )}
-        {events.error && (
+        {eventsQuery.error && !eventsQuery.data && (
           <p className="text-sm text-destructive">
-            Failed to load timetable. Run{' '}
-            <code className="rounded-none bg-black/35 px-1.5 py-0.5 text-sm">
-              ./scripts/seed.sh
-            </code>{' '}
-            after starting Postgres.
+            Failed to load timetable. Open the app once while online, then it
+            will work offline.
           </p>
         )}
-        {events.data &&
+        {eventsQuery.data &&
           eventsForGrid.length === 0 &&
-          !events.isLoading &&
-          !events.error && (
+          !eventsQuery.isLoading &&
+          !eventsQuery.error && (
             <p className="text-sm tracking-wide text-foreground/60 uppercase">
               {showMyTimetable
                 ? displayEvents.length === 0
@@ -184,7 +207,7 @@ function App() {
             </p>
           )}
 
-        {events.data &&
+        {eventsQuery.data &&
           eventsForGrid.length > 0 &&
           visibleStages.length > 0 && (
             <div className="min-h-0 flex-1">
@@ -195,9 +218,10 @@ function App() {
                 showDayColumn
                 scrollToEventId={scrollToEventId}
                 onScrolledToEvent={() => setScrollToEventId(null)}
-                onToggleFavourite={(eventId) =>
-                  toggleFavourite.mutate({ eventId })
-                }
+                onToggleFavourite={(eventId) => {
+                  toggleFavouriteId(eventId)
+                  syncFavourite.mutate({ eventId })
+                }}
               />
             </div>
           )}

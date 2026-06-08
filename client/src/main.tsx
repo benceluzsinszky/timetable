@@ -1,16 +1,32 @@
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
-import { QueryClientProvider } from '@tanstack/react-query'
+import { PersistQueryClientProvider } from '@tanstack/react-query-persist-client'
+import { createSyncStoragePersister } from '@tanstack/query-sync-storage-persister'
 import './index.css'
 import App from './App.tsx'
-import { queryClient, trpc, trpcClient } from './lib/trpc'
+import { offlineCacheOptions, queryClient, trpc, trpcClient } from './lib/trpc'
+
+const persister = createSyncStoragePersister({
+  storage: window.localStorage,
+  key: 'timetable-query-cache',
+})
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <trpc.Provider client={trpcClient} queryClient={queryClient}>
-      <QueryClientProvider client={queryClient}>
+      <PersistQueryClientProvider
+        client={queryClient}
+        persistOptions={{
+          persister,
+          maxAge: offlineCacheOptions.maxAge,
+          buster: offlineCacheOptions.buster,
+          dehydrateOptions: {
+            shouldDehydrateQuery: (query) => query.state.status === 'success',
+          },
+        }}
+      >
         <App />
-      </QueryClientProvider>
+      </PersistQueryClientProvider>
     </trpc.Provider>
   </StrictMode>,
 )

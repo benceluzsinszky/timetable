@@ -1,3 +1,4 @@
+import { isEventFavourited } from './favourites'
 import type { TimetableEvent } from './timetable-grid'
 import type { RouterOutputs } from './trpc'
 
@@ -8,5 +9,8 @@ export function toTimetableEvents(
 }
 
 export function isFavourited(event: TimetableEvent): boolean {
-  return Array.isArray(event.favourites) && event.favourites.length > 0
+  return (
+    isEventFavourited(event.id) ||
+    (Array.isArray(event.favourites) && event.favourites.length > 0)
+  )
 }
