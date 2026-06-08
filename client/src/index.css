@@ -89,23 +89,23 @@
   --stage-daad: oklch(0.58 0.24 350);
   --stage-daad-favourite: oklch(0.58 0.24 350 / 38%);
   --stage-daad-favourite-border: oklch(0.58 0.24 350 / 80%);
-  --stage-daad-column: oklch(0.58 0.24 350 / 22%);
+  --stage-daad-column: oklch(0.58 0.24 350 / 16%);
   --stage-dome: oklch(0.64 0.22 42);
   --stage-dome-favourite: oklch(0.64 0.22 42 / 38%);
   --stage-dome-favourite-border: oklch(0.64 0.22 42 / 80%);
-  --stage-dome-column: oklch(0.64 0.22 42 / 22%);
+  --stage-dome-column: oklch(0.64 0.22 42 / 16%);
   --stage-dragon: oklch(0.58 0.17 150);
   --stage-dragon-favourite: oklch(0.58 0.17 150 / 38%);
   --stage-dragon-favourite-border: oklch(0.58 0.17 150 / 80%);
-  --stage-dragon-column: oklch(0.58 0.17 150 / 22%);
+  --stage-dragon-column: oklch(0.58 0.17 150 / 16%);
   --stage-cooking: oklch(0.8 0.16 90);
   --stage-cooking-favourite: oklch(0.8 0.16 90 / 32%);
   --stage-cooking-favourite-border: oklch(0.8 0.16 90 / 72%);
-  --stage-cooking-column: oklch(0.8 0.16 90 / 18%);
+  --stage-cooking-column: oklch(0.8 0.16 90 / 14%);
   --stage-beach: oklch(0.66 0.13 205);
   --stage-beach-favourite: oklch(0.66 0.13 205 / 38%);
   --stage-beach-favourite-border: oklch(0.66 0.13 205 / 80%);
-  --stage-beach-column: oklch(0.66 0.13 205 / 22%);
+  --stage-beach-column: oklch(0.66 0.13 205 / 16%);
 }
 
 @layer base {

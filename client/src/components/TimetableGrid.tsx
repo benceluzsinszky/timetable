@@ -35,20 +35,39 @@ const DESKTOP_TIME_COLUMN_WIDTH = '4.5rem'
 const MOBILE_TIME_COLUMN_WIDTH = '2.35rem'
 const MOBILE_STAGE_COLUMN_WIDTH = '6.25rem'
 
-function gridTemplateColumns(
-  showDayColumn: boolean,
-  stageCount: number,
-  isMobile: boolean,
-): string {
+function gridTemplateColumns(stageCount: number, isMobile: boolean): string {
   if (isMobile) {
     return `${MOBILE_TIME_COLUMN_WIDTH} repeat(${stageCount}, minmax(${MOBILE_STAGE_COLUMN_WIDTH}, 1fr))`
   }
 
-  const stageColumns = `repeat(${stageCount}, minmax(0, 1fr))`
+  return `${DESKTOP_TIME_COLUMN_WIDTH} repeat(${stageCount}, minmax(0, 1fr))`
+}
 
-  return showDayColumn
-    ? `5rem ${DESKTOP_TIME_COLUMN_WIDTH} ${stageColumns}`
-    : `${DESKTOP_TIME_COLUMN_WIDTH} ${stageColumns}`
+function DayLabelBar({
+  label,
+  showTopBorder,
+}: {
+  label: string
+  showTopBorder: boolean
+}) {
+  return (
+    <div
+      className={cn(
+        'flex items-center justify-center border-b border-foreground/15 px-2 py-1 md:px-3 md:py-1.5',
+        SOFT_SURFACE_CLASS,
+        showTopBorder && 'border-t border-foreground/20',
+      )}
+    >
+      <span
+        className={cn(
+          'text-center text-[10px] md:text-[11px]',
+          SOFT_LABEL_CLASS,
+        )}
+      >
+        {label}
+      </span>
+    </div>
+  )
 }
 
 function gridMinWidth(
@@ -61,8 +80,12 @@ function gridMinWidth(
 }
 
 const GRID_LINE_CLASS = 'border-t border-foreground/15'
+const SOFT_SURFACE_CLASS = 'bg-black/20'
+const HEADER_SURFACE_CLASS = 'bg-black/[0.01]'
+const SOFT_LABEL_CLASS =
+  'font-medium text-foreground/60 uppercase tracking-wide'
 const STICKY_TIME_CLASS =
-  'sticky left-0 z-20 border-r border-foreground/15 bg-black/55 backdrop-blur-sm'
+  'sticky left-0 z-20 border-r border-foreground/15 backdrop-blur-sm'
 
 function TimeMarkersColumn({
   markers,
@@ -80,7 +103,8 @@ function TimeMarkersColumn({
   return (
     <div
       className={cn(
-        'relative border-r border-foreground/15 bg-black/20',
+        'relative border-r border-foreground/15',
+        SOFT_SURFACE_CLASS,
         sticky && STICKY_TIME_CLASS,
       )}
       style={{ height }}
@@ -100,7 +124,8 @@ function TimeMarkersColumn({
           >
             <span
               className={cn(
-                'font-medium text-foreground/60 uppercase tabular-nums leading-none',
+                'tabular-nums leading-none',
+                SOFT_LABEL_CLASS,
                 compact
                   ? 'text-[8px] tracking-tight'
                   : 'text-[10px] tracking-wide',
@@ -177,7 +202,7 @@ function EventCard({
         'h-full cursor-pointer gap-0.5 rounded-none border ring-0 transition-[background-color,filter,box-shadow,border-color] [--card-spacing:--spacing(2)] focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none',
         isMobile ? 'py-0.5' : 'py-1',
         !favourited &&
-          'border-foreground/15 bg-black/40 shadow-none hover:bg-black/55 active:bg-black/65',
+          'border-foreground/15 bg-black/20 shadow-none hover:bg-black/30 active:bg-black/40',
         favourited && 'hover:brightness-105 active:brightness-95',
       )}
       style={
@@ -212,7 +237,9 @@ function EventCard({
               : compact
                 ? 'text-[11px] tracking-wide'
                 : 'text-xs tracking-wide',
-            favourited ? 'font-semibold' : 'font-medium',
+            favourited
+              ? 'font-semibold text-foreground/85'
+              : 'font-medium text-foreground/75',
           )}
         >
           {event.artist}
@@ -225,7 +252,7 @@ function EventCard({
               : compact
                 ? 'text-[9px] tracking-wide'
                 : 'text-[10px] tracking-wide',
-            favourited ? 'text-foreground/75' : 'text-foreground/50',
+            favourited ? 'text-foreground/65' : 'text-foreground/50',
           )}
         >
           {timeLabel}
@@ -267,7 +294,6 @@ function DayTimeline({
   isLast: boolean
   isMobile: boolean
 }) {
-  const showDayInGrid = showDayColumn && !isMobile
   const { rangeStart, rangeEnd, durationMs } = getFestivalDayTimelineRange(
     dayLabel,
     events,
@@ -276,41 +302,21 @@ function DayTimeline({
   const height = timelineHeightPx(durationMs)
   const markers = buildTimeMarkers(rangeStart, rangeEnd, durationMs, height, {
     hideStart: !isFirst,
+    hideEnd: !isLast,
   })
 
   return (
-    <div className={cn(!isFirst && 'border-t border-foreground/20')}>
-      {isMobile && (
-        <div className="border-b border-foreground/15 bg-black/55 px-2 py-1">
-          <span className="text-[10px] font-semibold tracking-[0.1em] text-foreground uppercase">
-            {dayLabel}
-          </span>
-        </div>
+    <div>
+      {showDayColumn && (
+        <DayLabelBar label={dayLabel} showTopBorder={!isFirst} />
       )}
 
       <div
         className="grid w-full"
         style={{
-          gridTemplateColumns: gridTemplateColumns(
-            showDayInGrid,
-            stages.length,
-            isMobile,
-          ),
+          gridTemplateColumns: gridTemplateColumns(stages.length, isMobile),
         }}
       >
-        {showDayInGrid && (
-          <div
-            className="relative border-r border-foreground/15 bg-black/25"
-            style={{ height }}
-          >
-            <div className="sticky top-0 z-10 bg-black/50 px-2 py-2 shadow-[0_1px_0_0_oklch(0.97_0.01_95/18%)]">
-              <span className="text-[11px] font-semibold tracking-[0.12em] text-foreground uppercase">
-                {dayLabel}
-              </span>
-            </div>
-          </div>
-        )}
-
         <TimeMarkersColumn
           markers={markers}
           rangeEnd={rangeEnd}
@@ -378,10 +384,9 @@ export function TimetableGrid({
   className,
 }: TimetableGridProps) {
   const isMobile = useMediaQuery('(max-width: 767px)')
-  const showDayInGrid = showDayColumn && !isMobile
   const nonEmptyBlocks = dayBlocks.filter((block) => block.events.length > 0)
   const minWidth = gridMinWidth(stages.length, isMobile)
-  const columns = gridTemplateColumns(showDayInGrid, stages.length, isMobile)
+  const columns = gridTemplateColumns(stages.length, isMobile)
 
   if (nonEmptyBlocks.length === 0) {
     return (
@@ -394,30 +399,28 @@ export function TimetableGrid({
   return (
     <div
       className={cn(
-        'flex min-h-0 flex-col overflow-hidden rounded-none border border-foreground/20 bg-black/35',
+        'flex min-h-0 flex-col overflow-hidden rounded-none border border-foreground/15',
+        SOFT_SURFACE_CLASS,
         className,
       )}
     >
       <div className="min-h-0 flex-1 overflow-auto">
         <div className="w-full" style={{ minWidth }}>
           <div
-            className="sticky top-0 z-40 grid w-full shrink-0 border-b border-foreground/20 bg-black/70 backdrop-blur-sm"
+            className="sticky top-0 z-40 grid w-full shrink-0 border-b border-foreground/5 backdrop-blur-sm"
             style={{ gridTemplateColumns: columns }}
           >
-            {showDayInGrid && (
-              <div className="border-r border-foreground/15 px-2 py-2.5 text-[10px] font-semibold tracking-[0.14em] text-foreground/50 uppercase">
-                Day
-              </div>
-            )}
             <div
               className={cn(
-                'font-semibold text-foreground/50 uppercase',
+                'flex items-center justify-center border-r border-foreground/5 text-center',
+                HEADER_SURFACE_CLASS,
+                SOFT_LABEL_CLASS,
                 isMobile
                   ? cn(
                       STICKY_TIME_CLASS,
                       'px-1 py-1.5 text-[8px] tracking-tight',
                     )
-                  : 'border-r border-foreground/15 px-2 py-2.5 text-[10px] tracking-[0.14em]',
+                  : 'px-2 py-2.5 text-[10px]',
               )}
             >
               Time
@@ -428,7 +431,10 @@ export function TimetableGrid({
               return (
                 <div
                   key={stage}
-                  className="border-l border-foreground/15 text-center font-bold text-foreground uppercase md:px-2 md:py-2.5 md:text-xs md:tracking-widest px-1 py-1.5 text-[9px] tracking-tight"
+                  className={cn(
+                    'flex items-center justify-center border-l border-foreground/5 text-center px-1 py-1.5 text-[9px] tracking-tight md:px-2 md:py-2.5 md:text-xs md:tracking-wide',
+                    SOFT_LABEL_CLASS,
+                  )}
                   style={{ backgroundColor: stageTheme.column }}
                   title={stage}
                 >
