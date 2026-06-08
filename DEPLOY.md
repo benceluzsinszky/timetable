@@ -61,6 +61,8 @@ docker compose -f docker-compose.prod.yml exec app sh -c 'cd /app/server && node
 
 ## 6. Install Caddy
 
+### Option A — apt (Ubuntu 24.04 LTS)
+
 ```bash
 apt install -y debian-keyring debian-archive-keyring apt-transport-https
 curl -1sLf 'https://dl.cloudsmith.io/public/caddy/stable/gpg.key' | gpg --dearmor -o /usr/share/keyrings/caddy-stable-archive-keyring.gpg
@@ -68,11 +70,42 @@ curl -1sLf 'https://dl.cloudsmith.io/public/caddy/stable/debian.deb.txt' | tee /
 apt update && apt install -y caddy
 ```
 
-Copy the project Caddyfile:
+### Option B — binary install (if `apt update` fails)
+
+Use this when Ubuntu repos are broken (e.g. **Oracular 24.10** mirrors no longer available):
+
+```bash
+curl -fsSL "https://caddyserver.com/api/download?os=linux&arch=$(uname -m | sed 's/x86_64/amd64/;s/aarch64/arm64/')" -o /usr/local/bin/caddy
+chmod +x /usr/local/bin/caddy
+mkdir -p /etc/caddy
+caddy version
+
+cat >/etc/systemd/system/caddy.service <<'EOF'
+[Unit]
+Description=Caddy
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=notify
+ExecStart=/usr/local/bin/caddy run --environ --config /etc/caddy/Caddyfile
+ExecReload=/usr/local/bin/caddy reload --config /etc/caddy/Caddyfile --force
+TimeoutStopSec=5s
+AmbientCapabilities=CAP_NET_BIND_SERVICE
+
+[Install]
+WantedBy=multi-user.target
+EOF
+
+systemctl daemon-reload
+systemctl enable caddy
+```
+
+Copy the project Caddyfile and start Caddy:
 
 ```bash
 cp Caddyfile /etc/caddy/Caddyfile
-systemctl reload caddy
+systemctl start caddy
 systemctl status caddy
 ```
 
@@ -127,3 +160,7 @@ Re-run seed only if you need to reload CSV data (it **replaces** all events and 
 **502 from Caddy** — App not running: `docker compose -f docker-compose.prod.yml ps` and check logs.
 
 **Orange cloud (proxied) later** — Cloudflare → SSL/TLS → **Full (strict)**. Caddy keeps its origin certificate; visitors get Cloudflare edge TLS.
+
+**`apt update` fails with “oracular Release no longer has a Release file”** — Ubuntu 24.10 (Oracular) is end-of-life on DO mirrors. Use **Option B** (binary Caddy install) above, or recreate the droplet on **Ubuntu 24.04 LTS**.
+
+**Skip Caddy temporarily** — set `APP_PORT=80` in `.env`, restart compose, open `http://YOUR_DROPLET_IP`. Add Caddy/HTTPS later.
