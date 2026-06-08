@@ -6,8 +6,7 @@ import { TimetableGrid } from './components/TimetableGrid'
 import { Button } from '@/components/ui/button'
 import { filterEvents, getStagesFromEvents } from './lib/event-filters'
 import { toTimetableEvents } from './lib/events'
-import { toggleFavouriteId } from './lib/favourites'
-import { useFavouriteIds } from './lib/use-favourites'
+import { useFavourites } from './lib/use-favourites'
 import type { TimetableEvent } from './lib/timetable-grid'
 import { DAY_STAGES, getStageShortName, NIGHT_STAGES } from './lib/stage-theme'
 import { groupEventsByDay, sortStages } from './lib/timetable-grid'
@@ -25,7 +24,7 @@ function App() {
   const [scrollToEventId, setScrollToEventId] = useState<string | null>(null)
 
   const isOnline = useOnlineStatus()
-  const favouriteIds = useFavouriteIds()
+  const { favouriteIds, toggleFavourite } = useFavourites()
 
   const eventsQuery = trpc.events.list.useQuery({})
 
@@ -199,7 +198,7 @@ function App() {
                 showDayColumn
                 scrollToEventId={scrollToEventId}
                 onScrolledToEvent={() => setScrollToEventId(null)}
-                onToggleFavourite={toggleFavouriteId}
+                onToggleFavourite={toggleFavourite}
               />
             </div>
           )}

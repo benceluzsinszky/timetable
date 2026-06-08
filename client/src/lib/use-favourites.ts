@@ -1,11 +1,10 @@
-import { useSyncExternalStore } from 'react'
-import {
-  getFavouriteIds,
-  getFavouritesSnapshot,
-  subscribeFavourites,
-} from './favourites'
+import { useContext } from 'react'
+import { FavouritesContext } from './favourites-context'
 
-export function useFavouriteIds(): ReadonlySet<string> {
-  useSyncExternalStore(subscribeFavourites, getFavouritesSnapshot)
-  return new Set(getFavouriteIds())
+export function useFavourites() {
+  const context = useContext(FavouritesContext)
+  if (!context) {
+    throw new Error('useFavourites must be used within FavouritesProvider')
+  }
+  return context
 }

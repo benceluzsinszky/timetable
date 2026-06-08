@@ -1,18 +1,5 @@
 // Per-browser favourites in localStorage — no accounts, no server sync.
-const FAVOURITES_KEY = 'timetable-favourites'
-
-const listeners = new Set<() => void>()
-
-function emitChange() {
-  for (const listener of listeners) {
-    listener()
-  }
-}
-
-export function subscribeFavourites(onStoreChange: () => void): () => void {
-  listeners.add(onStoreChange)
-  return () => listeners.delete(onStoreChange)
-}
+export const FAVOURITES_KEY = 'timetable-favourites'
 
 export function getFavouriteIds(): string[] {
   const raw = localStorage.getItem(FAVOURITES_KEY)
@@ -26,10 +13,6 @@ export function getFavouriteIds(): string[] {
   } catch {
     return []
   }
-}
-
-export function getFavouritesSnapshot(): string {
-  return getFavouriteIds().join(',')
 }
 
 export function isEventFavourited(eventId: string): boolean {
@@ -47,6 +30,5 @@ export function toggleFavouriteId(eventId: string): boolean {
   }
 
   localStorage.setItem(FAVOURITES_KEY, JSON.stringify([...ids]))
-  emitChange()
   return favourited
 }

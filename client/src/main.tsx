@@ -4,6 +4,7 @@ import { PersistQueryClientProvider } from '@tanstack/react-query-persist-client
 import { createSyncStoragePersister } from '@tanstack/query-sync-storage-persister'
 import './index.css'
 import App from './App.tsx'
+import { FavouritesProvider } from './lib/favourites-store'
 import { offlineCacheOptions, queryClient, trpc, trpcClient } from './lib/trpc'
 
 // Drop pre-timezone-fix cache (wrong UTC times from first seed).
@@ -28,7 +29,9 @@ createRoot(document.getElementById('root')!).render(
           },
         }}
       >
-        <App />
+        <FavouritesProvider>
+          <App />
+        </FavouritesProvider>
       </PersistQueryClientProvider>
     </trpc.Provider>
   </StrictMode>,
