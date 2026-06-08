@@ -9,6 +9,7 @@ import {
   eventsForStage,
   formatSlotTime,
   getFestivalDayTimelineRange,
+  MIN_TWO_LINE_EVENT_HEIGHT_PX,
   timelineHeightPx,
 } from '../lib/timetable-grid'
 
@@ -133,7 +134,7 @@ function EventCard({
           : `Add ${event.artist} to favourites`
       }
       className={cn(
-        'h-full cursor-pointer gap-0.5 rounded-none border py-1.5 ring-0 transition-[background-color,filter,box-shadow,border-color] [--card-spacing:--spacing(2)] focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none',
+        'h-full cursor-pointer gap-0.5 rounded-none border py-1 ring-0 transition-[background-color,filter,box-shadow,border-color] [--card-spacing:--spacing(2)] focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none',
         !favourited &&
           'border-foreground/15 bg-black/40 shadow-none hover:bg-black/55 active:bg-black/65',
         favourited && 'hover:brightness-105 active:brightness-95',
@@ -156,7 +157,7 @@ function EventCard({
         }
       }}
     >
-      <div className="min-h-0 flex-1 space-y-1 overflow-hidden px-2">
+      <div className="flex min-h-0 flex-1 flex-col justify-start gap-0.5 overflow-hidden px-2">
         <p
           className={cn(
             'leading-tight tracking-wide uppercase',
@@ -280,7 +281,7 @@ function DayTimeline({
                     event={event}
                     stageTheme={stageTheme}
                     onToggleFavourite={onToggleFavourite}
-                    compact={heightPx < 40}
+                    compact={heightPx < MIN_TWO_LINE_EVENT_HEIGHT_PX}
                   />
                 </div>
               )

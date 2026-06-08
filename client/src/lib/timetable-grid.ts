@@ -33,9 +33,10 @@ const STAGE_ORDER = [
   'AM/Beach',
 ]
 
-export const PX_PER_MINUTE = 0.75
+export const PX_PER_MINUTE = 0.85
 const MIN_TIMELINE_HEIGHT_PX = 180
 const MIN_EVENT_HEIGHT_PX = 32
+export const MIN_TWO_LINE_EVENT_HEIGHT_PX = 50
 const HOUR_MS = 60 * 60 * 1000
 
 export function sortStages(stages: string[]): string[] {
@@ -99,9 +100,18 @@ export function eventPlacement(
   const topPx = ((start - rangeStart) / durationMs) * timelineHeight
   const rawHeightPx = ((end - start) / durationMs) * timelineHeight
 
+  const eventDurationMs = Math.max(end - start, 1)
+  const oneHourMs = 60 * 60 * 1000
+
   return {
     topPx,
-    heightPx: Math.max(MIN_EVENT_HEIGHT_PX, rawHeightPx),
+    heightPx: Math.max(
+      MIN_EVENT_HEIGHT_PX,
+      rawHeightPx,
+      eventDurationMs >= oneHourMs
+        ? MIN_TWO_LINE_EVENT_HEIGHT_PX
+        : MIN_EVENT_HEIGHT_PX,
+    ),
   }
 }
 
