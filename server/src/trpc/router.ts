@@ -32,25 +32,26 @@ export const appRouter = router({
       .input(
         z
           .object({
-            stage: z.string().optional(),
-            festivalDay: z.string().optional(),
+            stages: z.array(z.string()).optional(),
+            festivalDays: z.array(z.string()).optional(),
           })
           .optional(),
       )
       .query(async ({ ctx, input }) => {
-        const festivalDayWindow = input?.festivalDay
-          ? getFestivalDayWindow(input.festivalDay)
-          : null
+        const festivalDayWindows =
+          input?.festivalDays?.map((day) => getFestivalDayWindow(day)) ?? []
 
         return ctx.prisma.event.findMany({
           where: {
-            ...(input?.stage ? { stage: input.stage } : {}),
-            ...(festivalDayWindow
+            ...(input?.stages?.length ? { stage: { in: input.stages } } : {}),
+            ...(festivalDayWindows.length
               ? {
-                  startTime: {
-                    gte: festivalDayWindow.start,
-                    lt: festivalDayWindow.end,
-                  },
+                  OR: festivalDayWindows.map((window) => ({
+                    startTime: {
+                      gte: window.start,
+                      lt: window.end,
+                    },
+                  })),
                 }
               : {}),
           },

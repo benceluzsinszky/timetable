@@ -41,7 +41,7 @@ function gridTemplateColumns(
   isMobile: boolean,
 ): string {
   if (isMobile) {
-    return `${MOBILE_TIME_COLUMN_WIDTH} repeat(${stageCount}, ${MOBILE_STAGE_COLUMN_WIDTH})`
+    return `${MOBILE_TIME_COLUMN_WIDTH} repeat(${stageCount}, minmax(${MOBILE_STAGE_COLUMN_WIDTH}, 1fr))`
   }
 
   const stageColumns = `repeat(${stageCount}, minmax(0, 1fr))`
@@ -399,7 +399,7 @@ export function TimetableGrid({
       )}
     >
       <div className="min-h-0 flex-1 overflow-auto">
-        <div style={{ minWidth }}>
+        <div className="w-full" style={{ minWidth }}>
           <div
             className="sticky top-0 z-40 grid w-full shrink-0 border-b border-foreground/20 bg-black/70 backdrop-blur-sm"
             style={{ gridTemplateColumns: columns }}

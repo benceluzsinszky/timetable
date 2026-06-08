@@ -1,14 +1,9 @@
-import { useMemo, useRef, useState } from 'react'
+import { useMemo, useState } from 'react'
+import { FilterMultiSelect } from './components/FilterMultiSelect'
 import { TimetableGrid } from './components/TimetableGrid'
 import { Button } from '@/components/ui/button'
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select'
 import { isFavourited, toTimetableEvents } from './lib/events'
+import { getStageShortName } from './lib/stage-theme'
 import { groupEventsByDay, sortStages } from './lib/timetable-grid'
 import { trpc } from './lib/trpc'
 import { cn } from '@/lib/utils'
@@ -17,16 +12,17 @@ const ALL_DAYS = 'All days'
 const ALL_STAGES = 'All stages'
 
 function App() {
-  const [stageFilter, setStageFilter] = useState<string>()
-  const [festivalDay, setFestivalDay] = useState<string>()
+  const [stageFilters, setStageFilters] = useState<string[]>([])
+  const [festivalDays, setFestivalDays] = useState<string[]>([])
   const [showMyTimetable, setShowMyTimetable] = useState(false)
-  const skipDayValueChange = useRef(false)
-  const skipStageValueChange = useRef(false)
 
   const utils = trpc.useUtils()
   const stages = trpc.events.stages.useQuery()
   const days = trpc.events.days.useQuery()
-  const events = trpc.events.list.useQuery({ festivalDay })
+  const events = trpc.events.list.useQuery({
+    festivalDays: festivalDays.length > 0 ? festivalDays : undefined,
+    stages: stageFilters.length > 0 ? stageFilters : undefined,
+  })
   const toggleFavourite = trpc.favourites.toggle.useMutation({
     onSuccess: () => utils.events.list.invalidate(),
   })
@@ -47,10 +43,11 @@ function App() {
   }, [showMyTimetable, displayEvents, stages.data])
 
   const visibleStages = useMemo(() => {
-    return stageFilter
-      ? relevantStages.filter((stage) => stage === stageFilter)
-      : relevantStages
-  }, [relevantStages, stageFilter])
+    if (stageFilters.length === 0) return relevantStages
+
+    const selected = new Set(stageFilters)
+    return relevantStages.filter((stage) => selected.has(stage))
+  }, [relevantStages, stageFilters])
 
   const eventsForGrid = useMemo(() => {
     const visible = new Set(visibleStages)
@@ -64,6 +61,8 @@ function App() {
       events: dayEvents,
     }))
   }, [eventsForGrid])
+
+  const hasActiveFilters = festivalDays.length > 0 || stageFilters.length > 0
 
   return (
     <div className="daad-app min-h-svh">
@@ -98,87 +97,22 @@ function App() {
               Your timetable
             </Button>
 
-            <Select
-              value={festivalDay ?? ALL_DAYS}
-              onValueChange={(value) => {
-                if (skipDayValueChange.current) {
-                  skipDayValueChange.current = false
-                  return
-                }
+            <FilterMultiSelect
+              emptyLabel={ALL_DAYS}
+              options={days.data ?? []}
+              selected={festivalDays}
+              onChange={setFestivalDays}
+              className="w-[7.5rem] sm:w-[132px]"
+            />
 
-                if (!value || value === ALL_DAYS) {
-                  setFestivalDay(undefined)
-                  return
-                }
-
-                setFestivalDay(value)
-              }}
-            >
-              <SelectTrigger
-                size="sm"
-                className="w-[7.5rem] rounded-none border-foreground/20 bg-black/35 text-foreground uppercase sm:w-[132px]"
-              >
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent className="rounded-none border-foreground/20 bg-card uppercase">
-                <SelectItem value={ALL_DAYS}>All days</SelectItem>
-                {days.data?.map((day) => (
-                  <SelectItem
-                    key={day}
-                    value={day}
-                    onClick={() => {
-                      if (festivalDay !== day) return
-
-                      skipDayValueChange.current = true
-                      setFestivalDay(undefined)
-                    }}
-                  >
-                    {day}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-
-            <Select
-              value={stageFilter ?? ALL_STAGES}
-              onValueChange={(value) => {
-                if (skipStageValueChange.current) {
-                  skipStageValueChange.current = false
-                  return
-                }
-
-                if (!value || value === ALL_STAGES) {
-                  setStageFilter(undefined)
-                  return
-                }
-
-                setStageFilter(value)
-              }}
-            >
-              <SelectTrigger
-                size="sm"
-                className="w-[7.5rem] rounded-none border-foreground/20 bg-black/35 text-foreground uppercase sm:w-[148px]"
-              >
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent className="rounded-none border-foreground/20 bg-card uppercase">
-                <SelectItem value={ALL_STAGES}>All stages</SelectItem>
-                {stages.data?.map((value) => (
-                  <SelectItem
-                    key={value}
-                    value={value}
-                    onClick={() => {
-                      if (stageFilter !== value) return
-
-                      skipStageValueChange.current = true
-                      setStageFilter(undefined)
-                    }}
-                  >
-                    {value}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            <FilterMultiSelect
+              emptyLabel={ALL_STAGES}
+              options={stages.data ?? []}
+              selected={stageFilters}
+              onChange={setStageFilters}
+              getOptionLabel={getStageShortName}
+              className="w-[7.5rem] sm:w-[148px]"
+            />
           </div>
         </header>
 
@@ -203,10 +137,10 @@ function App() {
             <p className="text-sm tracking-wide text-foreground/60 uppercase">
               {showMyTimetable
                 ? displayEvents.length === 0
-                  ? festivalDay || stageFilter
+                  ? hasActiveFilters
                     ? 'No favourites match these filters.'
                     : 'No favourites yet. Tap events to add them.'
-                  : 'No favourites on this stage.'
+                  : 'No favourites on these stages.'
                 : 'No events match these filters.'}
             </p>
           )}
