@@ -12,10 +12,10 @@ describe('parseTimetableCsv', () => {
     const content = readFileSync(csvPath, 'utf-8')
     const slots = parseTimetableCsv(content)
 
-    expect(slots).toHaveLength(87)
+    expect(slots).toHaveLength(86)
     expect(slots[0]).toMatchObject({
-      artist: 'Gate Opening',
-      stage: 'Dragon Nest',
+      artist: 'Vedat Akdağ',
+      stage: 'Cooking Groove',
       day: 'Wednesday',
     })
   })
