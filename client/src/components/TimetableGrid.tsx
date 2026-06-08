@@ -53,7 +53,8 @@ function DayLabelBar({
   return (
     <div
       className={cn(
-        'flex items-center justify-center border-b border-foreground/15 px-2 py-1 md:px-3 md:py-1.5',
+        'sticky z-30 flex items-center justify-center border-b border-foreground/15 px-2 py-1 backdrop-blur-sm md:px-3 md:py-1.5',
+        STICKY_DAY_TOP_CLASS,
         SOFT_SURFACE_CLASS,
         showTopBorder && 'border-t border-foreground/20',
       )}
@@ -86,6 +87,8 @@ const SOFT_LABEL_CLASS =
   'font-medium text-foreground/60 uppercase tracking-wide'
 const STICKY_TIME_CLASS =
   'sticky left-0 z-20 border-r border-foreground/15 backdrop-blur-sm'
+const STICKY_HEADER_HEIGHT_CLASS = 'h-8 md:h-9'
+const STICKY_DAY_TOP_CLASS = 'top-8 md:top-9'
 
 function TimeMarkersColumn({
   markers,
@@ -407,7 +410,10 @@ export function TimetableGrid({
       <div className="min-h-0 flex-1 overflow-auto">
         <div className="w-full" style={{ minWidth }}>
           <div
-            className="sticky top-0 z-40 grid w-full shrink-0 border-b border-foreground/5 backdrop-blur-sm"
+            className={cn(
+              'sticky top-0 z-40 grid w-full shrink-0 border-b border-foreground/5 backdrop-blur-sm',
+              STICKY_HEADER_HEIGHT_CLASS,
+            )}
             style={{ gridTemplateColumns: columns }}
           >
             <div
