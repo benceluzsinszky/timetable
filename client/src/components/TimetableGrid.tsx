@@ -1,7 +1,6 @@
 import { Badge } from '@/components/ui/badge'
 import { Card } from '@/components/ui/card'
 import { cn } from '@/lib/utils'
-import { useMediaQuery } from '../lib/use-media-query'
 import {
   getStageShortName,
   getStageTheme,
@@ -17,6 +16,7 @@ import {
   MIN_TWO_LINE_EVENT_HEIGHT_PX,
   timelineHeightPx,
 } from '../lib/timetable-grid'
+import { useMediaQuery } from '../lib/use-media-query'
 
 export type DayBlock = {
   label: string
@@ -53,15 +53,14 @@ function DayLabelBar({
   return (
     <div
       className={cn(
-        'sticky z-30 flex items-center justify-center border-b border-foreground/15 px-2 py-1 backdrop-blur-sm md:px-3 md:py-1.5',
-        STICKY_DAY_TOP_CLASS,
+        'sticky top-0 z-30 flex items-center justify-start border-b border-foreground/15 px-2 py-1 backdrop-blur-sm md:justify-center md:px-3 md:py-1.5',
         SOFT_SURFACE_CLASS,
-        showTopBorder && 'border-t border-foreground/20',
+        showTopBorder && 'border-t border-foreground/15',
       )}
     >
       <span
         className={cn(
-          'text-center text-[10px] md:text-[11px]',
+          'text-left text-[10px] md:text-center md:text-[11px]',
           SOFT_LABEL_CLASS,
         )}
       >
@@ -85,22 +84,17 @@ const SOFT_SURFACE_CLASS = 'bg-black/20'
 const HEADER_SURFACE_CLASS = 'bg-black/[0.01]'
 const SOFT_LABEL_CLASS =
   'font-medium text-foreground/60 uppercase tracking-wide'
-const STICKY_TIME_CLASS =
-  'sticky left-0 z-20 border-r border-foreground/15 backdrop-blur-sm'
 const STICKY_HEADER_HEIGHT_CLASS = 'h-8 md:h-9'
-const STICKY_DAY_TOP_CLASS = 'top-8 md:top-9'
 
 function TimeMarkersColumn({
   markers,
   rangeEnd,
   height,
-  sticky,
   compact,
 }: {
   markers: TimeMarker[]
   rangeEnd: number
   height: number
-  sticky: boolean
   compact: boolean
 }) {
   return (
@@ -108,7 +102,6 @@ function TimeMarkersColumn({
       className={cn(
         'relative border-r border-foreground/15',
         SOFT_SURFACE_CLASS,
-        sticky && STICKY_TIME_CLASS,
       )}
       style={{ height }}
     >
@@ -324,7 +317,6 @@ function DayTimeline({
           markers={markers}
           rangeEnd={rangeEnd}
           height={height}
-          sticky={isMobile}
           compact={isMobile}
         />
 
@@ -407,11 +399,14 @@ export function TimetableGrid({
         className,
       )}
     >
-      <div className="min-h-0 flex-1 overflow-auto">
-        <div className="w-full" style={{ minWidth }}>
+      <div className="flex min-h-0 flex-1 flex-col overflow-x-auto overflow-y-hidden">
+        <div
+          className="flex min-h-0 w-full flex-1 flex-col"
+          style={{ minWidth }}
+        >
           <div
             className={cn(
-              'sticky top-0 z-40 grid w-full shrink-0 border-b border-foreground/5 backdrop-blur-sm',
+              'z-40 grid w-full shrink-0 border-b border-foreground/5 backdrop-blur-sm',
               STICKY_HEADER_HEIGHT_CLASS,
             )}
             style={{ gridTemplateColumns: columns }}
@@ -422,10 +417,7 @@ export function TimetableGrid({
                 HEADER_SURFACE_CLASS,
                 SOFT_LABEL_CLASS,
                 isMobile
-                  ? cn(
-                      STICKY_TIME_CLASS,
-                      'px-1 py-1.5 text-[8px] tracking-tight',
-                    )
+                  ? 'px-1 py-1.5 text-[8px] tracking-tight'
                   : 'px-2 py-2.5 text-[10px]',
               )}
             >
@@ -451,19 +443,21 @@ export function TimetableGrid({
             })}
           </div>
 
-          {nonEmptyBlocks.map((block, index) => (
-            <DayTimeline
-              key={block.label}
-              stages={stages}
-              events={block.events}
-              showDayColumn={showDayColumn}
-              dayLabel={block.label}
-              onToggleFavourite={onToggleFavourite}
-              isFirst={index === 0}
-              isLast={index === nonEmptyBlocks.length - 1}
-              isMobile={isMobile}
-            />
-          ))}
+          <div className="min-h-0 flex-1 overflow-x-hidden overflow-y-auto">
+            {nonEmptyBlocks.map((block, index) => (
+              <DayTimeline
+                key={block.label}
+                stages={stages}
+                events={block.events}
+                showDayColumn={showDayColumn}
+                dayLabel={block.label}
+                onToggleFavourite={onToggleFavourite}
+                isFirst={index === 0}
+                isLast={index === nonEmptyBlocks.length - 1}
+                isMobile={isMobile}
+              />
+            ))}
+          </div>
         </div>
       </div>
     </div>
