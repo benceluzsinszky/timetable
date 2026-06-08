@@ -1,5 +1,5 @@
 import { FESTIVAL_DAYS } from '@timetable/server/festival-day'
-import { useCallback, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import { ArtistSearch } from './components/ArtistSearch'
 import { FilterMultiSelect } from './components/FilterMultiSelect'
 import { TimetableGrid } from './components/TimetableGrid'
@@ -27,6 +27,13 @@ function App() {
   const { favouriteIds, toggleFavourite } = useFavourites()
 
   const eventsQuery = trpc.events.list.useQuery({})
+
+  useEffect(() => {
+    if (!navigator.onLine) return
+    void eventsQuery.refetch()
+    // Refresh once on load when online so stale offline cache cannot stick.
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- mount-only
+  }, [])
 
   const allEvents = useMemo(
     () => toTimetableEvents(eventsQuery.data),

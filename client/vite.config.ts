@@ -37,13 +37,16 @@ export default defineConfig({
         ],
       },
       workbox: {
+        cleanupOutdatedCaches: true,
+        clientsClaim: true,
+        skipWaiting: true,
         globPatterns: ['**/*.{js,css,html,ico,png,svg,woff,woff2}'],
         runtimeCaching: [
           {
             urlPattern: ({ url }) => url.pathname.startsWith('/trpc'),
             handler: 'NetworkFirst',
             options: {
-              cacheName: 'timetable-trpc-v2',
+              cacheName: 'timetable-trpc-v3',
               expiration: {
                 maxEntries: 16,
                 maxAgeSeconds: 60 * 60 * 24 * 60,

@@ -4,15 +4,18 @@ import { PersistQueryClientProvider } from '@tanstack/react-query-persist-client
 import { createSyncStoragePersister } from '@tanstack/query-sync-storage-persister'
 import './index.css'
 import App from './App.tsx'
+import {
+  migrateOfflineCache,
+  queryCacheStorageKey,
+} from './lib/cache-migration'
 import { FavouritesProvider } from './lib/favourites-store'
 import { offlineCacheOptions, queryClient, trpc, trpcClient } from './lib/trpc'
 
-// Drop pre-timezone-fix cache (wrong UTC times from first seed).
-localStorage.removeItem('timetable-query-cache')
+migrateOfflineCache()
 
 const persister = createSyncStoragePersister({
   storage: window.localStorage,
-  key: `timetable-query-cache-${offlineCacheOptions.buster}`,
+  key: queryCacheStorageKey(),
 })
 
 createRoot(document.getElementById('root')!).render(
