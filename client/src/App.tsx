@@ -6,7 +6,7 @@ import { TimetableGrid } from './components/TimetableGrid'
 import { Button } from '@/components/ui/button'
 import { filterEvents, getStagesFromEvents } from './lib/event-filters'
 import { toTimetableEvents } from './lib/events'
-import { isEventFavourited, toggleFavouriteId } from './lib/favourites'
+import { toggleFavouriteId } from './lib/favourites'
 import { useFavouriteIds } from './lib/use-favourites'
 import type { TimetableEvent } from './lib/timetable-grid'
 import { DAY_STAGES, getStageShortName, NIGHT_STAGES } from './lib/stage-theme'
@@ -86,26 +86,9 @@ function App() {
 
   const hasActiveFilters = festivalDays.length > 0 || stageFilters.length > 0
 
-  const handleSearchSelect = useCallback(
-    (event: TimetableEvent) => {
-      if (showMyTimetable && !isEventFavourited(event.id)) {
-        setShowMyTimetable(false)
-      }
-
-      setFestivalDays((current) =>
-        current.length === 0 || current.includes(event.festivalDay)
-          ? current
-          : [...current, event.festivalDay],
-      )
-      setStageFilters((current) =>
-        current.length === 0 || current.includes(event.stage)
-          ? current
-          : [...current, event.stage],
-      )
-      setScrollToEventId(event.id)
-    },
-    [showMyTimetable],
-  )
+  const handleSearchSelect = useCallback((event: TimetableEvent) => {
+    setScrollToEventId(event.id)
+  }, [])
 
   return (
     <div className="daad-app min-h-svh">
@@ -128,7 +111,7 @@ function App() {
           <div className="grid w-full grid-cols-2 gap-2 sm:w-[18rem]">
             <div className="flex min-w-0 flex-col gap-2">
               <ArtistSearch
-                events={allEvents}
+                events={displayEvents}
                 onSelect={handleSearchSelect}
                 className="w-full"
               />
