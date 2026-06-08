@@ -1,0 +1,14 @@
+---
+description: tRPC API conventions
+globs: server/src/**,client/src/lib/**
+alwaysApply: false
+---
+
+# API (tRPC)
+
+- Add endpoints in `server/src/trpc/router.ts` only
+- Validate inputs with Zod; use `publicProcedure` unless auth is added
+- DB access via `ctx.prisma`, session via `ctx.sessionId`
+- Export `AppRouter` type — client imports `@timetable/server/trpc`
+- Client calls: `trpc.<namespace>.<procedure>.useQuery()` / `.useMutation()`
+- Do not add REST routes or duplicate types on the client

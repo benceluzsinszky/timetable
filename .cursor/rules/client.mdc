@@ -1,0 +1,13 @@
+---
+description: React and Tailwind client conventions
+globs: client/**
+alwaysApply: false
+---
+
+# Client
+
+- React 19, functional components, TypeScript
+- Style with Tailwind utility classes; global styles in `src/index.css`
+- API calls only through `src/lib/trpc.ts` — never raw `fetch` to the server
+- Session ID lives in `src/lib/session.ts` (sent as `x-session-id` header)
+- Vite proxies `/trpc` → `localhost:3001`

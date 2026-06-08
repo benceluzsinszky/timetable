@@ -1,0 +1,37 @@
+{
+  "name": "@timetable/server",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "exports": {
+    "./trpc": "./src/trpc/router.ts"
+  },
+  "scripts": {
+    "dev": "tsx watch src/index.ts",
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "db:generate": "prisma generate",
+    "db:migrate": "prisma migrate dev",
+    "db:push": "prisma db push",
+    "db:studio": "prisma studio"
+  },
+  "dependencies": {
+    "@prisma/adapter-pg": "^7.0.0",
+    "@prisma/client": "^7.0.0",
+    "@trpc/server": "^11.7.1",
+    "cors": "^2.8.5",
+    "dotenv": "^17.2.3",
+    "express": "^5.1.0",
+    "pg": "^8.16.3",
+    "zod": "^4.1.12"
+  },
+  "devDependencies": {
+    "@types/cors": "^2.8.19",
+    "@types/express": "^5.0.3",
+    "@types/node": "^24.12.3",
+    "@types/pg": "^8.15.6",
+    "prisma": "^7.0.0",
+    "tsx": "^4.20.6",
+    "typescript": "~6.0.2"
+  }
+}

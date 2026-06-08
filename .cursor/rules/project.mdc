@@ -1,0 +1,13 @@
+---
+description: Timetable monorepo overview
+alwaysApply: true
+---
+
+# Project
+
+Two packages: `client/` (Vite + React) and `server/` (Express + tRPC). No root package.json.
+
+- Use `scripts/` shell scripts for install, dev, build, and db tasks
+- DB: Postgres via `docker compose up -d`, Prisma in `server/prisma/`
+- Types flow client ← server through tRPC `AppRouter` — no separate codegen
+- Keep changes scoped; match existing patterns in each package

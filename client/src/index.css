@@ -1,0 +1,13 @@
+@import 'tailwindcss';
+
+@theme {
+  --font-sans: system-ui, 'Segoe UI', Roboto, sans-serif;
+  --color-accent: #aa3bff;
+  --color-accent-muted: rgba(170, 59, 255, 0.1);
+}
+
+body {
+  margin: 0;
+  min-height: 100svh;
+  font-family: var(--font-sans);
+}

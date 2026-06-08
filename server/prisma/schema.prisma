@@ -1,0 +1,33 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Event {
+  id          String      @id @default(cuid())
+  title       String
+  description String?
+  startTime   DateTime
+  endTime     DateTime
+  location    String?
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+  favourites  Favourite[]
+
+  @@index([startTime])
+}
+
+model Favourite {
+  id        String   @id @default(cuid())
+  sessionId String
+  eventId   String
+  event     Event    @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+
+  @@unique([sessionId, eventId])
+  @@index([sessionId])
+}

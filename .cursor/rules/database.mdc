@@ -1,0 +1,12 @@
+---
+description: Prisma and database conventions
+globs: server/prisma/**,server/src/db.ts
+alwaysApply: false
+---
+
+# Database
+
+- Schema: `server/prisma/schema.prisma`; DB URL in `server/prisma.config.ts`
+- After schema changes: `./scripts/db-generate.sh` then `db:push` or `db:migrate`
+- Prisma client in `server/src/db.ts` via `@prisma/adapter-pg` — import `prisma` in tRPC procedures
+- Keep models aligned with the timetable domain (events, favourites)

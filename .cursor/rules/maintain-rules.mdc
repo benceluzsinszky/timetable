@@ -1,0 +1,14 @@
+---
+description: Keep Cursor rules up to date
+alwaysApply: true
+---
+
+# Maintain rules
+
+Update `.cursor/rules/` when you:
+
+- Add a new package, tool, or major pattern
+- Change how client and server communicate
+- Establish a convention worth repeating
+
+Rules must stay **short** (under ~15 lines each). Edit existing rules instead of adding long new ones. Remove rules that no longer apply.
