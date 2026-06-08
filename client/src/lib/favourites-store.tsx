@@ -13,6 +13,7 @@ import {
 } from './favourites'
 
 export function FavouritesProvider({ children }: { children: ReactNode }) {
+  const [revision, setRevision] = useState(0)
   const [favouriteIds, setFavouriteIds] = useState(
     () => new Set(getFavouriteIds()),
   )
@@ -21,6 +22,7 @@ export function FavouritesProvider({ children }: { children: ReactNode }) {
     const onStorage = (event: StorageEvent) => {
       if (event.key === FAVOURITES_KEY) {
         setFavouriteIds(new Set(getFavouriteIds()))
+        setRevision((value) => value + 1)
       }
     }
 
@@ -31,15 +33,17 @@ export function FavouritesProvider({ children }: { children: ReactNode }) {
   const toggleFavourite = useCallback((eventId: string) => {
     toggleFavouriteId(eventId)
     setFavouriteIds(new Set(getFavouriteIds()))
+    setRevision((value) => value + 1)
   }, [])
 
   const value = useMemo(
     () => ({
       favouriteIds,
+      revision,
       toggleFavourite,
       isFavourited: (eventId: string) => favouriteIds.has(eventId),
     }),
-    [favouriteIds, toggleFavourite],
+    [favouriteIds, revision, toggleFavourite],
   )
 
   return (

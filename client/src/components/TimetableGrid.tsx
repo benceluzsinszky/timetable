@@ -17,7 +17,6 @@ import {
   timelineHeightPx,
 } from '../lib/timetable-grid'
 import { useEffect, useRef, useState } from 'react'
-import { useFavourites } from '../lib/use-favourites'
 import { useMediaQuery } from '../lib/use-media-query'
 
 export type DayBlock = {
@@ -28,6 +27,8 @@ export type DayBlock = {
 type TimetableGridProps = {
   stages: string[]
   dayBlocks: DayBlock[]
+  favouriteIds: ReadonlySet<string>
+  favouritesRevision: number
   showDayColumn: boolean
   onToggleFavourite: (eventId: string) => void
   scrollToEventId?: string | null
@@ -173,6 +174,7 @@ function EventCard({
   event,
   stageTheme,
   onToggleFavourite,
+  favourited,
   compact,
   isMobile,
   highlighted,
@@ -180,12 +182,11 @@ function EventCard({
   event: TimetableEvent
   stageTheme: StageTheme
   onToggleFavourite: (eventId: string) => void
+  favourited: boolean
   compact: boolean
   isMobile: boolean
   highlighted: boolean
 }) {
-  const { isFavourited } = useFavourites()
-  const favourited = isFavourited(event.id)
   const startMs = new Date(event.startTime).getTime()
   const endMs = new Date(event.endTime).getTime()
   const timeLabel = `${formatSlotTime(startMs)} – ${formatSlotTime(endMs)}`
@@ -284,6 +285,7 @@ function DayTimeline({
   showDayColumn,
   dayLabel,
   onToggleFavourite,
+  favouriteIds,
   highlightedEventId,
   isFirst,
   isLast,
@@ -294,6 +296,7 @@ function DayTimeline({
   showDayColumn: boolean
   dayLabel: string
   onToggleFavourite: (eventId: string) => void
+  favouriteIds: ReadonlySet<string>
   highlightedEventId: string | null
   isFirst: boolean
   isLast: boolean
@@ -364,6 +367,7 @@ function DayTimeline({
                       event={event}
                       stageTheme={stageTheme}
                       onToggleFavourite={onToggleFavourite}
+                      favourited={favouriteIds.has(event.id)}
                       compact={heightPx < MIN_TWO_LINE_EVENT_HEIGHT_PX}
                       isMobile={isMobile}
                       highlighted={highlightedEventId === event.id}
@@ -382,6 +386,8 @@ function DayTimeline({
 export function TimetableGrid({
   stages,
   dayBlocks,
+  favouriteIds,
+  favouritesRevision,
   showDayColumn,
   onToggleFavourite,
   scrollToEventId,
@@ -506,12 +512,13 @@ export function TimetableGrid({
           >
             {nonEmptyBlocks.map((block, index) => (
               <DayTimeline
-                key={block.label}
+                key={`${block.label}-${favouritesRevision}`}
                 stages={stages}
                 events={block.events}
                 showDayColumn={showDayColumn}
                 dayLabel={block.label}
                 onToggleFavourite={onToggleFavourite}
+                favouriteIds={favouriteIds}
                 highlightedEventId={highlightedEventId}
                 isFirst={index === 0}
                 isLast={index === nonEmptyBlocks.length - 1}
