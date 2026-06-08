@@ -41,8 +41,13 @@ function App() {
 
   return (
     <div className="daad-app min-h-svh">
-      <div className="relative z-10 mx-auto flex h-svh w-full max-w-[1400px] flex-col gap-3 overflow-hidden p-4 md:p-6">
-        <header className="daad-frame flex shrink-0 items-end justify-between gap-4 pb-1">
+      <div className="daad-shell relative z-10 mx-auto flex h-svh w-full max-w-[1400px] flex-col gap-3 overflow-hidden p-4 md:p-6">
+        <span aria-hidden className="daad-corner daad-corner-tl" />
+        <span aria-hidden className="daad-corner daad-corner-tr" />
+        <span aria-hidden className="daad-corner daad-corner-bl" />
+        <span aria-hidden className="daad-corner daad-corner-br" />
+
+        <header className="flex shrink-0 items-end justify-between gap-4 pb-1">
           <div className="space-y-0.5">
             <h1 className="text-4xl font-bold tracking-[0.08em] text-foreground uppercase md:text-5xl">
               DAAD 2026
@@ -122,7 +127,7 @@ function App() {
         )}
 
         {events.data && events.data.length > 0 && (
-          <div className="daad-frame min-h-0 flex-1">
+          <div className="min-h-0 flex-1">
             <TimetableGrid
               className="h-full"
               stages={visibleStages}
