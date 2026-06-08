@@ -16,6 +16,7 @@ import {
   MIN_TWO_LINE_EVENT_HEIGHT_PX,
   timelineHeightPx,
 } from '../lib/timetable-grid'
+import { useEffect, useRef, useState } from 'react'
 import { useMediaQuery } from '../lib/use-media-query'
 
 export type DayBlock = {
@@ -28,6 +29,8 @@ type TimetableGridProps = {
   dayBlocks: DayBlock[]
   showDayColumn: boolean
   onToggleFavourite: (eventId: string) => void
+  scrollToEventId?: string | null
+  onScrolledToEvent?: () => void
   className?: string
 }
 
@@ -171,12 +174,14 @@ function EventCard({
   onToggleFavourite,
   compact,
   isMobile,
+  highlighted,
 }: {
   event: TimetableEvent
   stageTheme: StageTheme
   onToggleFavourite: (eventId: string) => void
   compact: boolean
   isMobile: boolean
+  highlighted: boolean
 }) {
   const favourited =
     Array.isArray(event.favourites) && event.favourites.length > 0
@@ -200,6 +205,7 @@ function EventCard({
         !favourited &&
           'border-foreground/15 bg-black/20 shadow-none hover:bg-black/30 active:bg-black/40',
         favourited && 'hover:brightness-105 active:brightness-95',
+        highlighted && 'ring-2 ring-primary shadow-[0_0_0_1px_var(--primary)]',
       )}
       style={
         favourited
@@ -277,6 +283,7 @@ function DayTimeline({
   showDayColumn,
   dayLabel,
   onToggleFavourite,
+  highlightedEventId,
   isFirst,
   isLast,
   isMobile,
@@ -286,6 +293,7 @@ function DayTimeline({
   showDayColumn: boolean
   dayLabel: string
   onToggleFavourite: (eventId: string) => void
+  highlightedEventId: string | null
   isFirst: boolean
   isLast: boolean
   isMobile: boolean
@@ -347,6 +355,7 @@ function DayTimeline({
                 return (
                   <div
                     key={event.id}
+                    data-event-id={event.id}
                     className={cn('absolute z-10', 'inset-x-0.5 py-0.5')}
                     style={{ top: topPx, height: heightPx }}
                   >
@@ -356,6 +365,7 @@ function DayTimeline({
                       onToggleFavourite={onToggleFavourite}
                       compact={heightPx < MIN_TWO_LINE_EVENT_HEIGHT_PX}
                       isMobile={isMobile}
+                      highlighted={highlightedEventId === event.id}
                     />
                   </div>
                 )
@@ -373,12 +383,61 @@ export function TimetableGrid({
   dayBlocks,
   showDayColumn,
   onToggleFavourite,
+  scrollToEventId,
+  onScrolledToEvent,
   className,
 }: TimetableGridProps) {
   const isMobile = useMediaQuery('(max-width: 767px)')
+  const scrollContainerRef = useRef<HTMLDivElement>(null)
+  const [highlightedEventId, setHighlightedEventId] = useState<string | null>(
+    null,
+  )
   const nonEmptyBlocks = dayBlocks.filter((block) => block.events.length > 0)
   const minWidth = gridMinWidth(stages.length, isMobile)
   const columns = gridTemplateColumns(stages.length, isMobile)
+
+  useEffect(() => {
+    if (!scrollToEventId) return
+
+    let cancelled = false
+    let attempts = 0
+
+    const tryScroll = () => {
+      if (cancelled) return
+
+      const element = scrollContainerRef.current?.querySelector(
+        `[data-event-id="${scrollToEventId}"]`,
+      )
+
+      if (element) {
+        element.scrollIntoView({ block: 'center', behavior: 'smooth' })
+        setHighlightedEventId(scrollToEventId)
+        onScrolledToEvent?.()
+        return
+      }
+
+      if (attempts < 12) {
+        attempts += 1
+        requestAnimationFrame(tryScroll)
+      }
+    }
+
+    tryScroll()
+
+    return () => {
+      cancelled = true
+    }
+  }, [scrollToEventId, nonEmptyBlocks, stages, onScrolledToEvent])
+
+  useEffect(() => {
+    if (!highlightedEventId) return
+
+    const timeout = window.setTimeout(() => {
+      setHighlightedEventId(null)
+    }, 2000)
+
+    return () => window.clearTimeout(timeout)
+  }, [highlightedEventId])
 
   if (nonEmptyBlocks.length === 0) {
     return (
@@ -440,7 +499,10 @@ export function TimetableGrid({
             })}
           </div>
 
-          <div className="min-h-0 flex-1 overflow-x-hidden overflow-y-auto">
+          <div
+            ref={scrollContainerRef}
+            className="min-h-0 flex-1 overflow-x-hidden overflow-y-auto"
+          >
             {nonEmptyBlocks.map((block, index) => (
               <DayTimeline
                 key={block.label}
@@ -449,6 +511,7 @@ export function TimetableGrid({
                 showDayColumn={showDayColumn}
                 dayLabel={block.label}
                 onToggleFavourite={onToggleFavourite}
+                highlightedEventId={highlightedEventId}
                 isFirst={index === 0}
                 isLast={index === nonEmptyBlocks.length - 1}
                 isMobile={isMobile}

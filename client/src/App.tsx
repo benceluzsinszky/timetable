@@ -1,8 +1,10 @@
-import { useMemo, useState } from 'react'
+import { useCallback, useMemo, useState } from 'react'
+import { ArtistSearch } from './components/ArtistSearch'
 import { FilterMultiSelect } from './components/FilterMultiSelect'
 import { TimetableGrid } from './components/TimetableGrid'
 import { Button } from '@/components/ui/button'
 import { isFavourited, toTimetableEvents } from './lib/events'
+import type { TimetableEvent } from './lib/timetable-grid'
 import { DAY_STAGES, getStageShortName, NIGHT_STAGES } from './lib/stage-theme'
 import { groupEventsByDay, sortStages } from './lib/timetable-grid'
 import { trpc } from './lib/trpc'
@@ -15,10 +17,12 @@ function App() {
   const [stageFilters, setStageFilters] = useState<string[]>([])
   const [festivalDays, setFestivalDays] = useState<string[]>([])
   const [showMyTimetable, setShowMyTimetable] = useState(false)
+  const [scrollToEventId, setScrollToEventId] = useState<string | null>(null)
 
   const utils = trpc.useUtils()
   const stages = trpc.events.stages.useQuery()
   const days = trpc.events.days.useQuery()
+  const searchEventsQuery = trpc.events.list.useQuery({})
   const events = trpc.events.list.useQuery({
     festivalDays: festivalDays.length > 0 ? festivalDays : undefined,
     stages: stageFilters.length > 0 ? stageFilters : undefined,
@@ -28,6 +32,10 @@ function App() {
   })
 
   const allEvents = useMemo(() => toTimetableEvents(events.data), [events.data])
+  const searchableEvents = useMemo(
+    () => toTimetableEvents(searchEventsQuery.data),
+    [searchEventsQuery.data],
+  )
 
   const displayEvents = useMemo(
     () => (showMyTimetable ? allEvents.filter(isFavourited) : allEvents),
@@ -64,6 +72,27 @@ function App() {
 
   const hasActiveFilters = festivalDays.length > 0 || stageFilters.length > 0
 
+  const handleSearchSelect = useCallback(
+    (event: TimetableEvent) => {
+      if (showMyTimetable && !isFavourited(event)) {
+        setShowMyTimetable(false)
+      }
+
+      setFestivalDays((current) =>
+        current.length === 0 || current.includes(event.festivalDay)
+          ? current
+          : [...current, event.festivalDay],
+      )
+      setStageFilters((current) =>
+        current.length === 0 || current.includes(event.stage)
+          ? current
+          : [...current, event.stage],
+      )
+      setScrollToEventId(event.id)
+    },
+    [showMyTimetable],
+  )
+
   return (
     <div className="daad-app min-h-svh">
       <div className="daad-shell relative z-10 mx-auto flex h-svh w-full max-w-[1400px] flex-col gap-2 overflow-hidden p-3 sm:gap-3 sm:p-4 md:p-6">
@@ -83,6 +112,12 @@ function App() {
           </div>
 
           <div className="flex flex-wrap items-center gap-2">
+            <ArtistSearch
+              events={searchableEvents}
+              onSelect={handleSearchSelect}
+              className="w-[8.5rem] sm:w-40"
+            />
+
             <Button
               type="button"
               size="sm"
@@ -158,6 +193,8 @@ function App() {
                 stages={visibleStages}
                 dayBlocks={dayBlocks}
                 showDayColumn
+                scrollToEventId={scrollToEventId}
+                onScrolledToEvent={() => setScrollToEventId(null)}
                 onToggleFavourite={(eventId) =>
                   toggleFavourite.mutate({ eventId })
                 }
