@@ -96,7 +96,6 @@ function festivalSortKey(row: TimetableRow): number {
   const [hours, minutes] = row.time.split(':').map(Number)
   let dayMinutes = hours! * 60 + minutes!
 
-  // After-midnight slots belong to the previous festival evening.
   if (hours! < 8) {
     dayMinutes += 24 * 60
   }

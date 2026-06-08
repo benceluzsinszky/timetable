@@ -20,9 +20,12 @@ function App() {
     return stageFilter ? all.filter((s) => s === stageFilter) : all
   }, [stages.data, stageFilter])
 
-  const daySections = useMemo(() => {
+  const dayBlocks = useMemo(() => {
     const grouped = groupEventsByDay(events.data ?? [])
-    return [...grouped.entries()]
+    return [...grouped.entries()].map(([label, dayEvents]) => ({
+      label,
+      events: dayEvents,
+    }))
   }, [events.data])
 
   return (
@@ -78,22 +81,14 @@ function App() {
         <p className="text-zinc-600">No events match these filters.</p>
       )}
 
-      <div className="space-y-10">
-        {daySections.map(([day, dayEvents]) => (
-          <section key={day} className="space-y-4">
-            {!festivalDay && (
-              <h2 className="text-lg font-semibold text-zinc-900">{day}</h2>
-            )}
-            <TimetableGrid
-              stages={visibleStages}
-              events={dayEvents}
-              onToggleFavourite={(eventId) =>
-                toggleFavourite.mutate({ eventId })
-              }
-            />
-          </section>
-        ))}
-      </div>
+      {events.data && events.data.length > 0 && (
+        <TimetableGrid
+          stages={visibleStages}
+          dayBlocks={dayBlocks}
+          showDayColumn={!festivalDay}
+          onToggleFavourite={(eventId) => toggleFavourite.mutate({ eventId })}
+        />
+      )}
     </div>
   )
 }
