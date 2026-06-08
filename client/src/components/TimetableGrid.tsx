@@ -1,8 +1,6 @@
 import { Badge } from '@/components/ui/badge'
-import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { cn } from '@/lib/utils'
-import { Star } from 'lucide-react'
 import type { TimeMarker, TimetableEvent } from '../lib/timetable-grid'
 import {
   buildTimeMarkers,
@@ -124,41 +122,58 @@ function EventCard({
   return (
     <Card
       size="sm"
-      className="h-full gap-1 rounded-sm border-violet-300/50 bg-card py-2 shadow-none ring-violet-300/30 [--card-spacing:--spacing(2)]"
+      role="button"
+      tabIndex={0}
+      aria-label={
+        favourited
+          ? `Remove ${event.artist} from favourites`
+          : `Add ${event.artist} to favourites`
+      }
+      className={cn(
+        'h-full cursor-pointer gap-1 rounded-sm border py-2 ring-0 shadow-none transition-[background-color,filter,box-shadow,border-color] [--card-spacing:--spacing(2)] focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none',
+        favourited
+          ? 'border-primary bg-primary text-primary-foreground shadow-md hover:brightness-95 hover:shadow-lg active:brightness-90 active:shadow-md'
+          : 'border-violet-300/50 bg-card hover:bg-secondary active:bg-muted',
+      )}
+      onClick={() => onToggleFavourite(event.id)}
+      onKeyDown={(e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault()
+          onToggleFavourite(event.id)
+        }
+      }}
     >
       <div className="min-h-0 flex-1 space-y-1 overflow-hidden px-2">
         <p
           className={cn(
             'font-medium leading-tight',
             compact ? 'text-xs' : 'text-sm',
+            favourited && 'font-semibold',
           )}
         >
           {event.artist}
         </p>
         <p
           className={cn(
-            'tabular-nums text-muted-foreground leading-tight',
+            'tabular-nums leading-tight',
             compact ? 'text-[10px]' : 'text-xs',
+            favourited ? 'text-primary-foreground/85' : 'text-muted-foreground',
           )}
         >
           {timeLabel}
         </p>
         {event.notes && !compact && (
-          <Badge variant="secondary" className="h-4 px-1.5 text-[10px]">
+          <Badge
+            variant="secondary"
+            className={cn(
+              'h-4 px-1.5 text-[10px]',
+              favourited &&
+                'border-primary-foreground/25 bg-primary-foreground/15 text-primary-foreground',
+            )}
+          >
             {event.notes}
           </Badge>
         )}
-      </div>
-      <div className="px-2">
-        <Button
-          type="button"
-          variant={favourited ? 'default' : 'ghost'}
-          size="icon-xs"
-          aria-label={favourited ? 'Remove favourite' : 'Add favourite'}
-          onClick={() => onToggleFavourite(event.id)}
-        >
-          <Star className={cn('size-3', favourited && 'fill-current')} />
-        </Button>
       </div>
     </Card>
   )
