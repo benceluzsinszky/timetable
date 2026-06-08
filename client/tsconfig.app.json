@@ -6,6 +6,7 @@
     "module": "esnext",
     "types": ["vite/client"],
     "skipLibCheck": true,
+    "ignoreDeprecations": "6.0",
 
     /* Bundler mode */
     "moduleResolution": "bundler",
@@ -21,7 +22,9 @@
     "erasableSyntaxOnly": true,
     "noFallthroughCasesInSwitch": true,
 
+    "baseUrl": ".",
     "paths": {
+      "@/*": ["./src/*"],
       "@timetable/server/trpc": ["../server/src/trpc/router.ts"],
       "@timetable/server/festival-day": ["../server/src/lib/festival-day.ts"]
     }

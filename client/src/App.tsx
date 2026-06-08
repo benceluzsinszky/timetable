@@ -1,7 +1,17 @@
 import { useMemo, useState } from 'react'
 import { TimetableGrid } from './components/TimetableGrid'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
 import { groupEventsByDay, sortStages } from './lib/timetable-grid'
 import { trpc } from './lib/trpc'
+
+const ALL_DAYS = 'all'
+const ALL_STAGES = 'all'
 
 function App() {
   const [stageFilter, setStageFilter] = useState<string>()
@@ -31,54 +41,68 @@ function App() {
   return (
     <div className="mx-auto flex min-h-svh w-full max-w-[1400px] flex-col gap-6 p-4 md:p-6">
       <header className="space-y-1">
-        <p className="text-sm font-medium uppercase tracking-wide text-violet-600">
+        <p className="text-sm font-medium tracking-wide text-primary uppercase">
           DAAD 2026
         </p>
-        <h1 className="text-3xl font-semibold tracking-tight text-zinc-900">
-          Timetable
-        </h1>
+        <h1 className="text-3xl font-semibold tracking-tight">Timetable</h1>
       </header>
 
       <section className="flex flex-wrap gap-3">
-        <select
-          className="rounded-lg border border-zinc-200 bg-white px-3 py-2 text-sm"
-          value={festivalDay ?? ''}
-          onChange={(event) => setFestivalDay(event.target.value || undefined)}
+        <Select
+          value={festivalDay ?? ALL_DAYS}
+          onValueChange={(value) =>
+            setFestivalDay(!value || value === ALL_DAYS ? undefined : value)
+          }
         >
-          <option value="">All days</option>
-          {days.data?.map((day) => (
-            <option key={day} value={day}>
-              {day}
-            </option>
-          ))}
-        </select>
+          <SelectTrigger className="w-[160px]">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value={ALL_DAYS}>All days</SelectItem>
+            {days.data?.map((day) => (
+              <SelectItem key={day} value={day}>
+                {day}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
 
-        <select
-          className="rounded-lg border border-zinc-200 bg-white px-3 py-2 text-sm"
-          value={stageFilter ?? ''}
-          onChange={(event) => setStageFilter(event.target.value || undefined)}
+        <Select
+          value={stageFilter ?? ALL_STAGES}
+          onValueChange={(value) =>
+            setStageFilter(!value || value === ALL_STAGES ? undefined : value)
+          }
         >
-          <option value="">All stages</option>
-          {stages.data?.map((value) => (
-            <option key={value} value={value}>
-              {value}
-            </option>
-          ))}
-        </select>
+          <SelectTrigger className="w-[180px]">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value={ALL_STAGES}>All stages</SelectItem>
+            {stages.data?.map((value) => (
+              <SelectItem key={value} value={value}>
+                {value}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
       </section>
 
-      {events.isLoading && <p className="text-zinc-600">Loading timetable…</p>}
+      {events.isLoading && (
+        <p className="text-sm text-muted-foreground">Loading timetable…</p>
+      )}
       {events.error && (
-        <p className="text-red-600">
+        <p className="text-sm text-destructive">
           Failed to load timetable. Run{' '}
-          <code className="rounded bg-zinc-100 px-1.5 py-0.5 text-sm">
+          <code className="rounded-md bg-muted px-1.5 py-0.5 text-sm">
             ./scripts/seed.sh
           </code>{' '}
           after starting Postgres.
         </p>
       )}
       {events.data?.length === 0 && (
-        <p className="text-zinc-600">No events match these filters.</p>
+        <p className="text-sm text-muted-foreground">
+          No events match these filters.
+        </p>
       )}
 
       {events.data && events.data.length > 0 && (
