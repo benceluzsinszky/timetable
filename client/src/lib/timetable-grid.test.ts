@@ -118,4 +118,30 @@ describe('timetable-grid', () => {
     expect(markers.length).toBeGreaterThan(0)
     expect(markers[0]!.topPx).toBeGreaterThanOrEqual(0)
   })
+
+  it('hides duplicate boundary markers between adjacent day blocks', () => {
+    const thursday = getFestivalDayTimelineRange('Thursday')
+    const friday = getFestivalDayTimelineRange('Friday')
+    const thursdayHeight = timelineHeightPx(thursday.durationMs)
+    const fridayHeight = timelineHeightPx(friday.durationMs)
+
+    const thursdayMarkers = buildTimeMarkers(
+      thursday.rangeStart,
+      thursday.rangeEnd,
+      thursday.durationMs,
+      thursdayHeight,
+      { hideEnd: true },
+    )
+    const fridayMarkers = buildTimeMarkers(
+      friday.rangeStart,
+      friday.rangeEnd,
+      friday.durationMs,
+      fridayHeight,
+      { hideStart: true },
+    )
+
+    expect(thursdayMarkers.at(-1)?.time).not.toBe(thursday.rangeEnd)
+    expect(fridayMarkers[0]?.time).not.toBe(friday.rangeStart)
+    expect(thursday.rangeEnd).toBe(friday.rangeStart)
+  })
 })

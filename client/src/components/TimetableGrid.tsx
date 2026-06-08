@@ -85,7 +85,9 @@ function DayTimeline({
     { trimStart: isFirst, trimEnd: isLast },
   )
   const height = timelineHeightPx(durationMs)
-  const markers = buildTimeMarkers(rangeStart, rangeEnd, durationMs, height)
+  const markers = buildTimeMarkers(rangeStart, rangeEnd, durationMs, height, {
+    hideEnd: !isLast,
+  })
 
   return (
     <div

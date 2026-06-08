@@ -105,11 +105,17 @@ export function eventPlacement(
   }
 }
 
+type TimeMarkerOptions = {
+  hideStart?: boolean
+  hideEnd?: boolean
+}
+
 export function buildTimeMarkers(
   rangeStart: number,
   rangeEnd: number,
   durationMs: number,
   timelineHeight: number,
+  options: TimeMarkerOptions = {},
 ): TimeMarker[] {
   const markers: TimeMarker[] = []
   const firstMarker = new Date(rangeStart)
@@ -121,10 +127,16 @@ export function buildTimeMarkers(
   }
 
   while (current <= rangeEnd) {
-    markers.push({
-      time: current,
-      topPx: ((current - rangeStart) / durationMs) * timelineHeight,
-    })
+    const isStart = current === rangeStart
+    const isEnd = current === rangeEnd
+
+    if (!(options.hideStart && isStart) && !(options.hideEnd && isEnd)) {
+      markers.push({
+        time: current,
+        topPx: ((current - rangeStart) / durationMs) * timelineHeight,
+      })
+    }
+
     current += HOUR_MS
   }
 
