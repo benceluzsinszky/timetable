@@ -6,9 +6,12 @@ import './index.css'
 import App from './App.tsx'
 import { offlineCacheOptions, queryClient, trpc, trpcClient } from './lib/trpc'
 
+// Drop pre-timezone-fix cache (wrong UTC times from first seed).
+localStorage.removeItem('timetable-query-cache')
+
 const persister = createSyncStoragePersister({
   storage: window.localStorage,
-  key: 'timetable-query-cache',
+  key: `timetable-query-cache-${offlineCacheOptions.buster}`,
 })
 
 createRoot(document.getElementById('root')!).render(

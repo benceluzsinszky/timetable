@@ -30,7 +30,7 @@ export const queryClient = new QueryClient({
 
 export const offlineCacheOptions = {
   maxAge: SIXTY_DAYS_MS,
-  buster: 'daad-2026-v1',
+  buster: 'daad-2026-v2',
 } as const
 
 export const trpcClient = trpc.createClient({

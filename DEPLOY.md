@@ -140,7 +140,15 @@ git pull
 docker compose -f docker-compose.prod.yml up -d --build
 ```
 
-Re-run seed only if you need to reload CSV data (it **replaces** all events and favourites).
+Re-run seed after CSV changes or timezone/parser fixes (it **replaces** all events in the DB):
+
+```bash
+docker compose -f docker-compose.prod.yml exec app sh -c 'cd /app/server && node dist/seed.js'
+```
+
+Verify times: Vedat Akdağ should be `startTime: 2026-06-17T19:00:00.000Z` (21:00 Budapest), not `...T21:00:00.000Z`.
+
+After re-seeding, bump `offlineCacheOptions.buster` in `client/src/lib/trpc.ts` and redeploy so browsers drop stale cached timetables.
 
 ## Useful commands
 

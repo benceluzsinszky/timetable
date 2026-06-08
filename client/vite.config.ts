@@ -43,7 +43,7 @@ export default defineConfig({
             urlPattern: ({ url }) => url.pathname.startsWith('/trpc'),
             handler: 'NetworkFirst',
             options: {
-              cacheName: 'timetable-trpc',
+              cacheName: 'timetable-trpc-v2',
               expiration: {
                 maxEntries: 16,
                 maxAgeSeconds: 60 * 60 * 24 * 60,
