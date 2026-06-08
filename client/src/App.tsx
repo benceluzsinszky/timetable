@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react'
 import { TimetableGrid } from './components/TimetableGrid'
+import { Button } from '@/components/ui/button'
 import {
   Select,
   SelectContent,
@@ -7,9 +8,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { toTimetableEvents } from './lib/events'
+import { isFavourited, toTimetableEvents } from './lib/events'
 import { groupEventsByDay, sortStages } from './lib/timetable-grid'
 import { trpc } from './lib/trpc'
+import { cn } from '@/lib/utils'
 
 const ALL_DAYS = 'All days'
 const ALL_STAGES = 'All stages'
@@ -17,6 +19,7 @@ const ALL_STAGES = 'All stages'
 function App() {
   const [stageFilter, setStageFilter] = useState<string>()
   const [festivalDay, setFestivalDay] = useState<string>()
+  const [showMyTimetable, setShowMyTimetable] = useState(false)
 
   const utils = trpc.useUtils()
   const stages = trpc.events.stages.useQuery()
@@ -26,18 +29,39 @@ function App() {
     onSuccess: () => utils.events.list.invalidate(),
   })
 
+  const allEvents = useMemo(() => toTimetableEvents(events.data), [events.data])
+
+  const displayEvents = useMemo(
+    () => (showMyTimetable ? allEvents.filter(isFavourited) : allEvents),
+    [allEvents, showMyTimetable],
+  )
+
+  const relevantStages = useMemo(() => {
+    if (showMyTimetable) {
+      return sortStages([...new Set(displayEvents.map((event) => event.stage))])
+    }
+
+    return sortStages(stages.data ?? [])
+  }, [showMyTimetable, displayEvents, stages.data])
+
   const visibleStages = useMemo(() => {
-    const all = sortStages(stages.data ?? [])
-    return stageFilter ? all.filter((s) => s === stageFilter) : all
-  }, [stages.data, stageFilter])
+    return stageFilter
+      ? relevantStages.filter((stage) => stage === stageFilter)
+      : relevantStages
+  }, [relevantStages, stageFilter])
+
+  const eventsForGrid = useMemo(() => {
+    const visible = new Set(visibleStages)
+    return displayEvents.filter((event) => visible.has(event.stage))
+  }, [displayEvents, visibleStages])
 
   const dayBlocks = useMemo(() => {
-    const grouped = groupEventsByDay(toTimetableEvents(events.data))
+    const grouped = groupEventsByDay(eventsForGrid)
     return [...grouped.entries()].map(([label, dayEvents]) => ({
       label,
       events: dayEvents,
     }))
-  }, [events.data])
+  }, [eventsForGrid])
 
   return (
     <div className="daad-app min-h-svh">
@@ -58,6 +82,20 @@ function App() {
           </div>
 
           <div className="flex shrink-0 items-center gap-2">
+            <Button
+              type="button"
+              size="sm"
+              variant={showMyTimetable ? 'default' : 'outline'}
+              className={cn(
+                'rounded-none border-foreground/20 uppercase tracking-wide',
+                !showMyTimetable &&
+                  'bg-black/35 text-foreground hover:bg-black/50',
+              )}
+              onClick={() => setShowMyTimetable((active) => !active)}
+            >
+              Your timetable
+            </Button>
+
             <Select
               value={festivalDay ?? ALL_DAYS}
               onValueChange={(value) =>
@@ -120,25 +158,36 @@ function App() {
             after starting Postgres.
           </p>
         )}
-        {events.data?.length === 0 && (
-          <p className="text-sm tracking-wide text-foreground/60 uppercase">
-            No events match these filters.
-          </p>
-        )}
+        {events.data &&
+          eventsForGrid.length === 0 &&
+          !events.isLoading &&
+          !events.error && (
+            <p className="text-sm tracking-wide text-foreground/60 uppercase">
+              {showMyTimetable
+                ? displayEvents.length === 0
+                  ? festivalDay || stageFilter
+                    ? 'No favourites match these filters.'
+                    : 'No favourites yet. Tap events to add them.'
+                  : 'No favourites on this stage.'
+                : 'No events match these filters.'}
+            </p>
+          )}
 
-        {events.data && events.data.length > 0 && (
-          <div className="min-h-0 flex-1">
-            <TimetableGrid
-              className="h-full"
-              stages={visibleStages}
-              dayBlocks={dayBlocks}
-              showDayColumn
-              onToggleFavourite={(eventId) =>
-                toggleFavourite.mutate({ eventId })
-              }
-            />
-          </div>
-        )}
+        {events.data &&
+          eventsForGrid.length > 0 &&
+          visibleStages.length > 0 && (
+            <div className="min-h-0 flex-1">
+              <TimetableGrid
+                className="h-full"
+                stages={visibleStages}
+                dayBlocks={dayBlocks}
+                showDayColumn
+                onToggleFavourite={(eventId) =>
+                  toggleFavourite.mutate({ eventId })
+                }
+              />
+            </div>
+          )}
       </div>
     </div>
   )
