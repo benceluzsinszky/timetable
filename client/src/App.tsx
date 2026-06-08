@@ -39,15 +39,15 @@ function App() {
   }, [events.data])
 
   return (
-    <div className="mx-auto flex min-h-svh w-full max-w-[1400px] flex-col gap-6 p-4 md:p-6">
-      <header className="space-y-1">
+    <div className="mx-auto flex h-svh w-full max-w-[1400px] flex-col gap-4 overflow-hidden p-4 md:gap-5 md:p-6">
+      <header className="shrink-0 space-y-1">
         <p className="text-sm font-medium tracking-wide text-primary uppercase">
           DAAD 2026
         </p>
         <h1 className="text-3xl font-semibold tracking-tight">Timetable</h1>
       </header>
 
-      <section className="flex flex-wrap gap-3">
+      <section className="flex shrink-0 flex-wrap gap-3">
         <Select
           value={festivalDay ?? ALL_DAYS}
           onValueChange={(value) =>
@@ -106,12 +106,15 @@ function App() {
       )}
 
       {events.data && events.data.length > 0 && (
-        <TimetableGrid
-          stages={visibleStages}
-          dayBlocks={dayBlocks}
-          showDayColumn={!festivalDay}
-          onToggleFavourite={(eventId) => toggleFavourite.mutate({ eventId })}
-        />
+        <div className="min-h-0 flex-1">
+          <TimetableGrid
+            className="h-full"
+            stages={visibleStages}
+            dayBlocks={dayBlocks}
+            showDayColumn
+            onToggleFavourite={(eventId) => toggleFavourite.mutate({ eventId })}
+          />
+        </div>
       )}
     </div>
   )

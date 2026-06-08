@@ -119,7 +119,7 @@ describe('timetable-grid', () => {
     expect(markers[0]!.topPx).toBeGreaterThanOrEqual(0)
   })
 
-  it('hides duplicate boundary markers between adjacent day blocks', () => {
+  it('shows 9am at day end and hides duplicate start between blocks', () => {
     const thursday = getFestivalDayTimelineRange('Thursday')
     const friday = getFestivalDayTimelineRange('Friday')
     const thursdayHeight = timelineHeightPx(thursday.durationMs)
@@ -130,7 +130,6 @@ describe('timetable-grid', () => {
       thursday.rangeEnd,
       thursday.durationMs,
       thursdayHeight,
-      { hideEnd: true },
     )
     const fridayMarkers = buildTimeMarkers(
       friday.rangeStart,
@@ -140,7 +139,7 @@ describe('timetable-grid', () => {
       { hideStart: true },
     )
 
-    expect(thursdayMarkers.at(-1)?.time).not.toBe(thursday.rangeEnd)
+    expect(thursdayMarkers.at(-1)?.time).toBe(thursday.rangeEnd)
     expect(fridayMarkers[0]?.time).not.toBe(friday.rangeStart)
     expect(thursday.rangeEnd).toBe(friday.rangeStart)
   })

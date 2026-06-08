@@ -33,9 +33,9 @@ const STAGE_ORDER = [
   'AM/Beach',
 ]
 
-export const PX_PER_MINUTE = 2
-const MIN_TIMELINE_HEIGHT_PX = 480
-const MIN_EVENT_HEIGHT_PX = 44
+export const PX_PER_MINUTE = 0.75
+const MIN_TIMELINE_HEIGHT_PX = 180
+const MIN_EVENT_HEIGHT_PX = 32
 const HOUR_MS = 60 * 60 * 1000
 
 export function sortStages(stages: string[]): string[] {

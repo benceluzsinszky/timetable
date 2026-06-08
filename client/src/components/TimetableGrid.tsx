@@ -1,4 +1,9 @@
-import type { TimetableEvent } from '../lib/timetable-grid'
+import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
+import { Card } from '@/components/ui/card'
+import { cn } from '@/lib/utils'
+import { Star } from 'lucide-react'
+import type { TimeMarker, TimetableEvent } from '../lib/timetable-grid'
 import {
   buildTimeMarkers,
   eventPlacement,
@@ -7,11 +12,6 @@ import {
   getFestivalDayTimelineRange,
   timelineHeightPx,
 } from '../lib/timetable-grid'
-import { Badge } from '@/components/ui/badge'
-import { Button } from '@/components/ui/button'
-import { Card } from '@/components/ui/card'
-import { cn } from '@/lib/utils'
-import { Star } from 'lucide-react'
 
 export type DayBlock = {
   label: string
@@ -23,6 +23,87 @@ type TimetableGridProps = {
   dayBlocks: DayBlock[]
   showDayColumn: boolean
   onToggleFavourite: (eventId: string) => void
+  className?: string
+}
+
+const TIME_COLUMN_WIDTH = '4.5rem'
+
+function gridTemplateColumns(
+  showDayColumn: boolean,
+  stageCount: number,
+): string {
+  const stageColumns = `repeat(${stageCount}, minmax(0, 1fr))`
+
+  return showDayColumn
+    ? `5rem ${TIME_COLUMN_WIDTH} ${stageColumns}`
+    : `${TIME_COLUMN_WIDTH} ${stageColumns}`
+}
+
+const GRID_LINE_CLASS = 'border-t border-border'
+
+function TimeMarkersColumn({
+  markers,
+  rangeEnd,
+  height,
+}: {
+  markers: TimeMarker[]
+  rangeEnd: number
+  height: number
+}) {
+  return (
+    <div
+      className="relative border-r border-border bg-muted/30"
+      style={{ height }}
+    >
+      {markers.map((marker) => {
+        const isRangeEnd = marker.time === rangeEnd
+
+        return (
+          <div
+            key={marker.time}
+            className={cn(
+              'absolute right-0 left-0 flex items-center justify-end pr-1.5',
+              isRangeEnd ? '-translate-y-full' : '-translate-y-1/2',
+            )}
+            style={{ top: isRangeEnd ? height : marker.topPx }}
+          >
+            <span className="text-[10px] font-medium text-foreground/70 tabular-nums">
+              {formatSlotTime(marker.time)}
+            </span>
+          </div>
+        )
+      })}
+    </div>
+  )
+}
+
+function HourGridLines({
+  markers,
+  rangeEnd,
+  height,
+}: {
+  markers: TimeMarker[]
+  rangeEnd: number
+  height: number
+}) {
+  return (
+    <>
+      {markers.map((marker) => {
+        const isRangeEnd = marker.time === rangeEnd
+
+        return (
+          <div
+            key={marker.time}
+            className={cn(
+              'pointer-events-none absolute right-0 left-0',
+              GRID_LINE_CLASS,
+            )}
+            style={{ top: isRangeEnd ? height : marker.topPx }}
+          />
+        )
+      })}
+    </>
+  )
 }
 
 function EventCard({
@@ -36,11 +117,14 @@ function EventCard({
 }) {
   const favourited =
     Array.isArray(event.favourites) && event.favourites.length > 0
+  const startMs = new Date(event.startTime).getTime()
+  const endMs = new Date(event.endTime).getTime()
+  const timeLabel = `${formatSlotTime(startMs)} – ${formatSlotTime(endMs)}`
 
   return (
     <Card
       size="sm"
-      className="h-full gap-1 border-violet-200/70 bg-card/95 py-2 shadow-sm ring-violet-200/40 [--card-spacing:--spacing(2)]"
+      className="h-full gap-1 rounded-sm border-violet-300/50 bg-card py-2 shadow-none ring-violet-300/30 [--card-spacing:--spacing(2)]"
     >
       <div className="min-h-0 flex-1 space-y-1 overflow-hidden px-2">
         <p
@@ -50,6 +134,14 @@ function EventCard({
           )}
         >
           {event.artist}
+        </p>
+        <p
+          className={cn(
+            'tabular-nums text-muted-foreground leading-tight',
+            compact ? 'text-[10px]' : 'text-xs',
+          )}
+        >
+          {timeLabel}
         </p>
         {event.notes && !compact && (
           <Badge variant="secondary" className="h-4 px-1.5 text-[10px]">
@@ -97,46 +189,33 @@ function DayTimeline({
   const height = timelineHeightPx(durationMs)
   const markers = buildTimeMarkers(rangeStart, rangeEnd, durationMs, height, {
     hideStart: !isFirst,
-    hideEnd: !isLast,
   })
 
   return (
     <div
-      className={cn('grid min-w-max', !isFirst && 'border-t border-border')}
+      className={cn('grid w-full', !isFirst && 'border-t border-border')}
       style={{
-        gridTemplateColumns: showDayColumn
-          ? `5rem 4.5rem repeat(${stages.length}, minmax(9rem, 1fr))`
-          : `4.5rem repeat(${stages.length}, minmax(9rem, 1fr))`,
+        gridTemplateColumns: gridTemplateColumns(showDayColumn, stages.length),
       }}
     >
       {showDayColumn && (
         <div
-          className="sticky left-0 z-20 flex items-start border-r border-border bg-primary/5 px-2 pt-3"
+          className="relative border-r border-border bg-primary/5"
           style={{ height }}
         >
-          <span className="text-xs font-semibold text-primary">{dayLabel}</span>
+          <div className="sticky top-0 z-10 bg-primary/10 px-2 py-2 shadow-[0_1px_0_0_var(--border)]">
+            <span className="text-xs font-semibold text-primary">
+              {dayLabel}
+            </span>
+          </div>
         </div>
       )}
 
-      <div
-        className={cn(
-          'relative border-r border-border bg-muted/40',
-          !showDayColumn && 'sticky left-0 z-10',
-        )}
-        style={{ height }}
-      >
-        {markers.map((marker) => (
-          <div
-            key={marker.time}
-            className="absolute right-0 left-0 flex -translate-y-1/2 items-center justify-end pr-1.5"
-            style={{ top: marker.topPx }}
-          >
-            <span className="text-[10px] font-medium text-muted-foreground tabular-nums">
-              {formatSlotTime(marker.time)}
-            </span>
-          </div>
-        ))}
-      </div>
+      <TimeMarkersColumn
+        markers={markers}
+        rangeEnd={rangeEnd}
+        height={height}
+      />
 
       {stages.map((stage) => {
         const stageEvents = eventsForStage(events, stage)
@@ -144,16 +223,14 @@ function DayTimeline({
         return (
           <div
             key={stage}
-            className="relative border-l border-border bg-muted/20"
+            className="relative border-l border-border bg-muted/15"
             style={{ height }}
           >
-            {markers.map((marker) => (
-              <div
-                key={marker.time}
-                className="pointer-events-none absolute right-0 left-0 border-t border-dashed border-border/80"
-                style={{ top: marker.topPx }}
-              />
-            ))}
+            <HourGridLines
+              markers={markers}
+              rangeEnd={rangeEnd}
+              height={height}
+            />
 
             {stageEvents.map((event) => {
               const { topPx, heightPx } = eventPlacement(
@@ -166,13 +243,13 @@ function DayTimeline({
               return (
                 <div
                   key={event.id}
-                  className="absolute right-1 left-1 z-10"
+                  className="absolute inset-x-0.5 z-10 py-0.5"
                   style={{ top: topPx, height: heightPx }}
                 >
                   <EventCard
                     event={event}
                     onToggleFavourite={onToggleFavourite}
-                    compact={heightPx < 64}
+                    compact={heightPx < 40}
                   />
                 </div>
               )
@@ -189,6 +266,7 @@ export function TimetableGrid({
   dayBlocks,
   showDayColumn,
   onToggleFavourite,
+  className,
 }: TimetableGridProps) {
   const nonEmptyBlocks = dayBlocks.filter((block) => block.events.length > 0)
 
@@ -201,39 +279,41 @@ export function TimetableGrid({
   }
 
   return (
-    <Card className="overflow-hidden p-0 ring-border">
+    <div
+      className={cn(
+        'flex min-h-0 flex-col overflow-hidden rounded-xl bg-card ring-1 ring-border',
+        className,
+      )}
+    >
       <div
-        className="sticky top-0 z-30 grid min-w-max border-b border-border bg-muted/60"
+        className="grid w-full shrink-0 border-b border-border bg-muted/95"
         style={{
-          gridTemplateColumns: showDayColumn
-            ? `5rem 4.5rem repeat(${stages.length}, minmax(9rem, 1fr))`
-            : `4.5rem repeat(${stages.length}, minmax(9rem, 1fr))`,
+          gridTemplateColumns: gridTemplateColumns(
+            showDayColumn,
+            stages.length,
+          ),
         }}
       >
         {showDayColumn && (
-          <div className="sticky left-0 z-40 border-r border-border bg-muted/60 px-2 py-2 text-[10px] font-semibold tracking-wide text-muted-foreground uppercase">
+          <div className="border-r px-2 py-2 text-[10px] font-semibold tracking-wide text-muted-foreground uppercase">
             Day
           </div>
         )}
-        <div
-          className={cn(
-            'border-r border-border bg-muted/60 px-2 py-2 text-[10px] font-semibold tracking-wide text-muted-foreground uppercase',
-            !showDayColumn && 'sticky left-0 z-40',
-          )}
-        >
+        <div className="border-r px-2 py-2 text-[10px] font-semibold tracking-wide text-muted-foreground uppercase">
           Time
         </div>
         {stages.map((stage) => (
           <div
             key={stage}
-            className="border-l border-border px-2 py-2 text-center text-[11px] font-semibold tracking-wide uppercase"
+            className="truncate border-l px-2 py-2 text-center text-[11px] font-semibold tracking-wide uppercase"
+            title={stage}
           >
             {stage}
           </div>
         ))}
       </div>
 
-      <div className="overflow-x-auto">
+      <div className="min-h-0 flex-1 overflow-y-auto">
         {nonEmptyBlocks.map((block, index) => (
           <DayTimeline
             key={block.label}
@@ -247,6 +327,6 @@ export function TimetableGrid({
           />
         ))}
       </div>
-    </Card>
+    </div>
   )
 }
