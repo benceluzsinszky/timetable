@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useMemo, useRef, useState } from 'react'
 import { TimetableGrid } from './components/TimetableGrid'
 import { Button } from '@/components/ui/button'
 import {
@@ -20,6 +20,8 @@ function App() {
   const [stageFilter, setStageFilter] = useState<string>()
   const [festivalDay, setFestivalDay] = useState<string>()
   const [showMyTimetable, setShowMyTimetable] = useState(false)
+  const skipDayValueChange = useRef(false)
+  const skipStageValueChange = useRef(false)
 
   const utils = trpc.useUtils()
   const stages = trpc.events.stages.useQuery()
@@ -98,9 +100,19 @@ function App() {
 
             <Select
               value={festivalDay ?? ALL_DAYS}
-              onValueChange={(value) =>
-                setFestivalDay(!value || value === ALL_DAYS ? undefined : value)
-              }
+              onValueChange={(value) => {
+                if (skipDayValueChange.current) {
+                  skipDayValueChange.current = false
+                  return
+                }
+
+                if (!value || value === ALL_DAYS) {
+                  setFestivalDay(undefined)
+                  return
+                }
+
+                setFestivalDay(value)
+              }}
             >
               <SelectTrigger
                 size="sm"
@@ -111,7 +123,16 @@ function App() {
               <SelectContent className="rounded-none border-foreground/20 bg-card uppercase">
                 <SelectItem value={ALL_DAYS}>All days</SelectItem>
                 {days.data?.map((day) => (
-                  <SelectItem key={day} value={day}>
+                  <SelectItem
+                    key={day}
+                    value={day}
+                    onClick={() => {
+                      if (festivalDay !== day) return
+
+                      skipDayValueChange.current = true
+                      setFestivalDay(undefined)
+                    }}
+                  >
                     {day}
                   </SelectItem>
                 ))}
@@ -120,11 +141,19 @@ function App() {
 
             <Select
               value={stageFilter ?? ALL_STAGES}
-              onValueChange={(value) =>
-                setStageFilter(
-                  !value || value === ALL_STAGES ? undefined : value,
-                )
-              }
+              onValueChange={(value) => {
+                if (skipStageValueChange.current) {
+                  skipStageValueChange.current = false
+                  return
+                }
+
+                if (!value || value === ALL_STAGES) {
+                  setStageFilter(undefined)
+                  return
+                }
+
+                setStageFilter(value)
+              }}
             >
               <SelectTrigger
                 size="sm"
@@ -135,7 +164,16 @@ function App() {
               <SelectContent className="rounded-none border-foreground/20 bg-card uppercase">
                 <SelectItem value={ALL_STAGES}>All stages</SelectItem>
                 {stages.data?.map((value) => (
-                  <SelectItem key={value} value={value}>
+                  <SelectItem
+                    key={value}
+                    value={value}
+                    onClick={() => {
+                      if (stageFilter !== value) return
+
+                      skipStageValueChange.current = true
+                      setStageFilter(undefined)
+                    }}
+                  >
                     {value}
                   </SelectItem>
                 ))}
