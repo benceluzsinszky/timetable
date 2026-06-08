@@ -1,0 +1,11 @@
+---
+description: Testing and code quality checks
+alwaysApply: true
+---
+
+# Quality
+
+- Every new feature needs tests in the same PR/change
+- After code changes, run `./scripts/check.sh` (tsc + eslint for client and server)
+- Run `./scripts/test.sh` when adding or changing behaviour
+- Use Prettier via ESLint (`eslint-plugin-prettier`); format with `./scripts/format.sh` if needed

@@ -56,6 +56,9 @@ cp server/.env.example server/.env
 | `scripts/db-push.sh` | Push schema to database |
 | `scripts/db-migrate.sh` | Run Prisma migrations |
 | `scripts/db-studio.sh` | Open Prisma Studio |
+| `scripts/check.sh` | Typecheck + ESLint (client and server) |
+| `scripts/test.sh` | Run all tests |
+| `scripts/format.sh` | Prettier format (client and server) |
 
 ## Project structure
 

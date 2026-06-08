@@ -31,7 +31,8 @@ function App() {
         )}
         {health.data && (
           <p className="text-emerald-700">
-            Connected — last check {new Date(health.data.timestamp).toLocaleTimeString()}
+            Connected — last check{' '}
+            {new Date(health.data.timestamp).toLocaleTimeString()}
           </p>
         )}
       </section>
@@ -39,9 +40,7 @@ function App() {
       <section className="rounded-xl border border-zinc-200 bg-white p-6 shadow-sm">
         <h2 className="mb-4 text-lg font-medium text-zinc-900">Events</h2>
         {events.isLoading && <p className="text-zinc-600">Loading events…</p>}
-        {events.error && (
-          <p className="text-red-600">Failed to load events.</p>
-        )}
+        {events.error && <p className="text-red-600">Failed to load events.</p>}
         {events.data?.length === 0 && (
           <p className="text-zinc-600">
             No events yet. Add some via Prisma Studio or a seed script.

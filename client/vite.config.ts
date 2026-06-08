@@ -13,7 +13,10 @@ export default defineConfig({
   ],
   resolve: {
     alias: {
-      '@timetable/server/trpc': path.resolve(__dirname, '../server/src/trpc/router.ts'),
+      '@timetable/server/trpc': path.resolve(
+        __dirname,
+        '../server/src/trpc/router.ts',
+      ),
     },
   },
   server: {
