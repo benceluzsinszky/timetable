@@ -131,47 +131,51 @@ function App() {
             </p>
           </div>
 
-          <div className="flex flex-wrap items-center gap-2">
-            <ArtistSearch
-              events={allEvents}
-              onSelect={handleSearchSelect}
-              className="w-[8.5rem] sm:w-40"
-            />
+          <div className="grid w-full grid-cols-2 gap-2 sm:w-[18rem]">
+            <div className="flex min-w-0 flex-col gap-2">
+              <ArtistSearch
+                events={allEvents}
+                onSelect={handleSearchSelect}
+                className="w-full"
+              />
 
-            <Button
-              type="button"
-              size="sm"
-              variant={showMyTimetable ? 'default' : 'outline'}
-              className={cn(
-                'rounded-none border-foreground/20 text-xs uppercase tracking-wide sm:text-sm',
-                !showMyTimetable &&
-                  'bg-black/35 text-foreground hover:bg-black/50',
-              )}
-              onClick={() => setShowMyTimetable((active) => !active)}
-            >
-              Your timetable
-            </Button>
+              <Button
+                type="button"
+                size="sm"
+                variant={showMyTimetable ? 'default' : 'outline'}
+                className={cn(
+                  'h-7 w-full rounded-none border-foreground/20 text-xs font-normal uppercase tracking-wide sm:text-sm',
+                  !showMyTimetable &&
+                    'bg-black/35 text-foreground hover:bg-black/50',
+                )}
+                onClick={() => setShowMyTimetable((active) => !active)}
+              >
+                Your timetable
+              </Button>
+            </div>
 
-            <FilterMultiSelect
-              emptyLabel={ALL_DAYS}
-              options={[...FESTIVAL_DAYS]}
-              selected={festivalDays}
-              onChange={setFestivalDays}
-              className="w-[7.5rem] sm:w-[132px]"
-            />
+            <div className="flex min-w-0 flex-col gap-2">
+              <FilterMultiSelect
+                emptyLabel={ALL_DAYS}
+                options={[...FESTIVAL_DAYS]}
+                selected={festivalDays}
+                onChange={setFestivalDays}
+                className="w-full"
+              />
 
-            <FilterMultiSelect
-              emptyLabel={ALL_STAGES}
-              options={stageOptions}
-              selected={stageFilters}
-              onChange={setStageFilters}
-              getOptionLabel={getStageShortName}
-              presets={[
-                { label: 'Day stages', values: [...DAY_STAGES] },
-                { label: 'Night stages', values: [...NIGHT_STAGES] },
-              ]}
-              className="w-[7.5rem] sm:w-[148px]"
-            />
+              <FilterMultiSelect
+                emptyLabel={ALL_STAGES}
+                options={stageOptions}
+                selected={stageFilters}
+                onChange={setStageFilters}
+                getOptionLabel={getStageShortName}
+                presets={[
+                  { label: 'Day stages', values: [...DAY_STAGES] },
+                  { label: 'Night stages', values: [...NIGHT_STAGES] },
+                ]}
+                className="w-full"
+              />
+            </div>
           </div>
         </header>
 
