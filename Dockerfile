@@ -33,15 +33,13 @@ WORKDIR /app
 ENV NODE_ENV=production
 
 COPY server/package.json server/package-lock.json ./server/
-RUN cd server && npm ci --omit=dev && npm install prisma@^7.0.0 tsx@^4.20.6 --no-save
+RUN cd server && npm ci --omit=dev && npm install prisma@^7.0.0 --no-save
 
 COPY --from=server-build /app/server/dist ./server/dist
 COPY --from=server-build /app/server/src/generated ./server/src/generated
 COPY --from=server-build /app/server/prisma ./server/prisma
 COPY --from=server-build /app/server/prisma.config.ts ./server/prisma.config.ts
 COPY --from=server-build /app/server/data ./server/data
-COPY --from=server-build /app/server/src/seed.ts ./server/src/seed.ts
-COPY --from=server-build /app/server/src/lib ./server/src/lib
 COPY --from=client-build /app/client/dist ./server/client-dist
 
 COPY scripts/docker-entrypoint.sh /entrypoint.sh

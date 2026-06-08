@@ -56,7 +56,7 @@ Expect: `Serving client from /app/server/client-dist`.
 ## 5. Seed the database (once)
 
 ```bash
-docker compose -f docker-compose.prod.yml exec app sh -c 'cd /app/server && ./node_modules/.bin/tsx src/seed.ts'
+docker compose -f docker-compose.prod.yml exec app sh -c 'cd /app/server && node dist/seed.js'
 ```
 
 ## 6. Install Caddy
