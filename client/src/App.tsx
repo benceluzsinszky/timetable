@@ -3,7 +3,7 @@ import { FilterMultiSelect } from './components/FilterMultiSelect'
 import { TimetableGrid } from './components/TimetableGrid'
 import { Button } from '@/components/ui/button'
 import { isFavourited, toTimetableEvents } from './lib/events'
-import { getStageShortName } from './lib/stage-theme'
+import { DAY_STAGES, getStageShortName, NIGHT_STAGES } from './lib/stage-theme'
 import { groupEventsByDay, sortStages } from './lib/timetable-grid'
 import { trpc } from './lib/trpc'
 import { cn } from '@/lib/utils'
@@ -111,6 +111,10 @@ function App() {
               selected={stageFilters}
               onChange={setStageFilters}
               getOptionLabel={getStageShortName}
+              presets={[
+                { label: 'Day stages', values: [...DAY_STAGES] },
+                { label: 'Night stages', values: [...NIGHT_STAGES] },
+              ]}
               className="w-[7.5rem] sm:w-[148px]"
             />
           </div>

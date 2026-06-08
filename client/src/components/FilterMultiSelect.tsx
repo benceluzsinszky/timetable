@@ -3,12 +3,18 @@ import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 import { Check, ChevronDown } from 'lucide-react'
 
+export type FilterPreset = {
+  label: string
+  values: string[]
+}
+
 type FilterMultiSelectProps = {
   emptyLabel: string
   options: string[]
   selected: string[]
   onChange: (selected: string[]) => void
   getOptionLabel?: (option: string) => string
+  presets?: FilterPreset[]
   className?: string
 }
 
@@ -16,6 +22,19 @@ function toggleSelected(selected: string[], option: string): string[] {
   return selected.includes(option)
     ? selected.filter((value) => value !== option)
     : [...selected, option]
+}
+
+function isPresetSelected(selected: string[], values: string[]): boolean {
+  return values.length > 0 && values.every((value) => selected.includes(value))
+}
+
+function togglePreset(selected: string[], values: string[]): string[] {
+  if (isPresetSelected(selected, values)) {
+    const excluded = new Set(values)
+    return selected.filter((value) => !excluded.has(value))
+  }
+
+  return [...new Set([...selected, ...values])]
 }
 
 function formatSummary(
@@ -42,6 +61,7 @@ export function FilterMultiSelect({
   selected,
   onChange,
   getOptionLabel,
+  presets,
   className,
 }: FilterMultiSelectProps) {
   const [open, setOpen] = useState(false)
@@ -86,6 +106,34 @@ export function FilterMultiSelect({
           aria-multiselectable
           className="absolute top-full right-0 z-50 mt-1 max-h-60 min-w-full overflow-y-auto rounded-none border border-foreground/20 bg-card py-1 shadow-md"
         >
+          {presets?.map((preset) => {
+            const isSelected = isPresetSelected(selected, preset.values)
+
+            return (
+              <button
+                key={preset.label}
+                type="button"
+                role="option"
+                aria-selected={isSelected}
+                className={cn(
+                  'flex w-full items-center gap-2 px-2.5 py-1.5 text-left text-xs font-medium uppercase tracking-wide transition-colors hover:bg-muted sm:text-sm',
+                  isSelected && 'bg-muted/60 text-foreground',
+                )}
+                onClick={() => onChange(togglePreset(selected, preset.values))}
+              >
+                <span className="flex size-3.5 shrink-0 items-center justify-center">
+                  {isSelected && <Check className="size-3" />}
+                </span>
+                <span className="truncate">{preset.label}</span>
+              </button>
+            )
+          })}
+          {presets && presets.length > 0 && options.length > 0 && (
+            <div
+              role="separator"
+              className="my-1 border-t border-foreground/15"
+            />
+          )}
           {options.map((option) => {
             const isSelected = selected.includes(option)
             const label = getOptionLabel?.(option) ?? option

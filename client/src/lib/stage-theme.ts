@@ -45,6 +45,9 @@ const FALLBACK_THEME: StageTheme = {
   favouritedBorder: 'var(--primary)',
 }
 
+export const DAY_STAGES = ['AM/Beach', 'Cooking Groove'] as const
+export const NIGHT_STAGES = ['DAAD Stage', 'The Dome', 'Dragon Nest'] as const
+
 const STAGE_SHORT_NAMES: Record<string, string> = {
   'DAAD Stage': 'DAAD',
   'The Dome': 'Dome',
