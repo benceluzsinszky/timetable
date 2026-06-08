@@ -347,10 +347,7 @@ function DayTimeline({
                 return (
                   <div
                     key={event.id}
-                    className={cn(
-                      'absolute z-10',
-                      isMobile ? 'inset-x-0 py-0' : 'inset-x-0.5 py-0.5',
-                    )}
+                    className={cn('absolute z-10', 'inset-x-0.5 py-0.5')}
                     style={{ top: topPx, height: heightPx }}
                   >
                     <EventCard
