@@ -6,7 +6,6 @@ function createCaller(sessionId?: string) {
     prisma: {
       event: {
         findMany: vi.fn().mockResolvedValue([]),
-        create: vi.fn(),
       },
       favourite: {
         findUnique: vi.fn(),

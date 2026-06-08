@@ -9,16 +9,19 @@ datasource db {
 
 model Event {
   id          String      @id @default(cuid())
-  title       String
-  description String?
+  artist      String
+  stage       String
+  festivalDay String
   startTime   DateTime
   endTime     DateTime
-  location    String?
+  notes       String?
   createdAt   DateTime    @default(now())
   updatedAt   DateTime    @updatedAt
   favourites  Favourite[]
 
   @@index([startTime])
+  @@index([stage])
+  @@index([festivalDay])
 }
 
 model Favourite {

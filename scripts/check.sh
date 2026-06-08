@@ -8,6 +8,9 @@ echo "==> client typecheck"
 echo "==> client lint"
 (cd "$ROOT/client" && npm run lint)
 
+echo "==> server prisma generate"
+(cd "$ROOT/server" && npm run db:generate)
+
 echo "==> server typecheck"
 (cd "$ROOT/server" && npm run typecheck)
 

@@ -34,6 +34,7 @@ cp server/.env.example server/.env
 ```bash
 ./scripts/db-generate.sh
 ./scripts/db-push.sh
+./scripts/seed.sh
 ```
 
 ### 5. Run dev servers
@@ -59,6 +60,7 @@ cp server/.env.example server/.env
 | `scripts/check.sh` | Typecheck + ESLint (client and server) |
 | `scripts/test.sh` | Run all tests |
 | `scripts/format.sh` | Prettier format (client and server) |
+| `scripts/seed.sh` | Load timetable CSV into the database |
 
 ## Project structure
 

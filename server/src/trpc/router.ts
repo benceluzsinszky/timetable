@@ -8,30 +8,47 @@ export const appRouter = router({
   })),
 
   events: router({
-    list: publicProcedure.query(async ({ ctx }) => {
-      return ctx.prisma.event.findMany({
-        orderBy: { startTime: 'asc' },
-        include: {
-          favourites: ctx.sessionId
-            ? { where: { sessionId: ctx.sessionId }, select: { id: true } }
-            : false,
-        },
+    list: publicProcedure
+      .input(
+        z
+          .object({
+            stage: z.string().optional(),
+            festivalDay: z.string().optional(),
+          })
+          .optional(),
+      )
+      .query(async ({ ctx, input }) => {
+        return ctx.prisma.event.findMany({
+          where: {
+            ...(input?.stage ? { stage: input.stage } : {}),
+            ...(input?.festivalDay ? { festivalDay: input.festivalDay } : {}),
+          },
+          orderBy: { startTime: 'asc' },
+          include: {
+            favourites: ctx.sessionId
+              ? { where: { sessionId: ctx.sessionId }, select: { id: true } }
+              : false,
+          },
+        })
+      }),
+
+    stages: publicProcedure.query(async ({ ctx }) => {
+      const rows = await ctx.prisma.event.findMany({
+        distinct: ['stage'],
+        select: { stage: true },
+        orderBy: { stage: 'asc' },
       })
+      return rows.map((row) => row.stage)
     }),
 
-    create: publicProcedure
-      .input(
-        z.object({
-          title: z.string().min(1),
-          description: z.string().optional(),
-          startTime: z.coerce.date(),
-          endTime: z.coerce.date(),
-          location: z.string().optional(),
-        }),
-      )
-      .mutation(async ({ ctx, input }) => {
-        return ctx.prisma.event.create({ data: input })
-      }),
+    days: publicProcedure.query(async ({ ctx }) => {
+      const rows = await ctx.prisma.event.findMany({
+        distinct: ['festivalDay'],
+        select: { festivalDay: true, startTime: true },
+        orderBy: { startTime: 'asc' },
+      })
+      return rows.map((row) => row.festivalDay)
+    }),
   }),
 
   favourites: router({
