@@ -14,7 +14,7 @@ export default defineConfig({
     VitePWA({
       registerType: 'autoUpdate',
       injectRegister: 'auto',
-      includeAssets: ['favicon.png', 'icons.svg'],
+      includeAssets: ['favicon.png', 'pwa-192.png', 'pwa-512.png', 'icons.svg'],
       manifest: {
         name: 'DAAD 2026 Timetable',
         short_name: 'DAAD Timetable',
@@ -25,14 +25,22 @@ export default defineConfig({
         start_url: '/',
         icons: [
           {
-            src: '/favicon.png',
+            src: '/pwa-192.png',
             sizes: '192x192',
             type: 'image/png',
+            purpose: 'any',
+          },
+          {
+            src: '/pwa-512.png',
+            sizes: '512x512',
+            type: 'image/png',
+            purpose: 'any',
           },
           {
             src: '/favicon.png',
-            sizes: '512x512',
+            sizes: '1024x1024',
             type: 'image/png',
+            purpose: 'any',
           },
         ],
       },
