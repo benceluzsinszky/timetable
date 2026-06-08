@@ -1,6 +1,25 @@
 import { z } from 'zod'
 import { publicProcedure, router } from './trpc.js'
 
+const STAGE_ORDER = [
+  'DAAD Stage',
+  'The Dome',
+  'Dragon Nest',
+  'Cooking Groove',
+  'AM/Beach',
+]
+
+function sortStageNames(stages: string[]): string[] {
+  return [...stages].sort((a, b) => {
+    const aIndex = STAGE_ORDER.indexOf(a)
+    const bIndex = STAGE_ORDER.indexOf(b)
+    if (aIndex === -1 && bIndex === -1) return a.localeCompare(b)
+    if (aIndex === -1) return 1
+    if (bIndex === -1) return -1
+    return aIndex - bIndex
+  })
+}
+
 export const appRouter = router({
   health: publicProcedure.query(() => ({
     status: 'ok' as const,
@@ -38,7 +57,7 @@ export const appRouter = router({
         select: { stage: true },
         orderBy: { stage: 'asc' },
       })
-      return rows.map((row) => row.stage)
+      return sortStageNames(rows.map((row) => row.stage))
     }),
 
     days: publicProcedure.query(async ({ ctx }) => {

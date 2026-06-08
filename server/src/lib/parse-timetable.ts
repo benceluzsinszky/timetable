@@ -2,34 +2,38 @@ export type TimetableRow = {
   date: string
   day: string
   time: string
+  endTime: string
   stage: string
   artist: string
   notes: string | null
 }
 
-export type ParsedSlot = TimetableRow & {
+export type ParsedSlot = Omit<TimetableRow, 'endTime'> & {
   startTime: Date
   endTime: Date
 }
-
-const DEFAULT_SLOT_MS = 60 * 60 * 1000
 
 export function parseTimetableCsv(content: string): ParsedSlot[] {
   const lines = content.trim().split('\n').slice(1)
   const rows = lines.filter(Boolean).map(parseCsvLine)
   const startTimes = resolveStartTimes(rows)
-  const endTimes = resolveEndTimes(rows, startTimes)
 
-  return rows.map((row, index) => ({
-    ...row,
-    startTime: startTimes[index]!,
-    endTime: endTimes[index]!,
-  }))
+  return rows.map((row, index) => {
+    const startTime = startTimes[index]!
+    return {
+      ...row,
+      startTime,
+      endTime: resolveSlotEndTime(row, startTime),
+    }
+  })
 }
 
 function parseCsvLine(line: string): TimetableRow {
-  const [date, day, time, stage, artist, notes] = line.split(',')
-  if (!date || !day || !time || !stage || !artist) {
+  const parts = line.split(',')
+  const [date, day, time, endTime, stage, ...artistParts] = parts
+  const artist = artistParts.join(',').trim()
+
+  if (!date || !day || !time || !endTime || !stage || !artist) {
     throw new Error(`Invalid timetable row: ${line}`)
   }
 
@@ -37,10 +41,19 @@ function parseCsvLine(line: string): TimetableRow {
     date,
     day,
     time,
-    stage,
+    endTime,
+    stage: normalizeStage(stage),
     artist,
-    notes: notes?.trim() ? notes.trim() : null,
+    notes: null,
   }
+}
+
+function normalizeStage(stage: string): string {
+  if (stage === 'Am/Beach') {
+    return 'AM/Beach'
+  }
+
+  return stage
 }
 
 function resolveStartTimes(rows: TimetableRow[]): Date[] {
@@ -70,25 +83,14 @@ function resolveStartTimes(rows: TimetableRow[]): Date[] {
   return startTimes
 }
 
-function resolveEndTimes(rows: TimetableRow[], startTimes: Date[]): Date[] {
-  const endTimes = rows.map(
-    (_, index) => new Date(startTimes[index]!.getTime() + DEFAULT_SLOT_MS),
-  )
-  const indicesByStage = groupIndicesByStage(rows)
+function resolveSlotEndTime(row: TimetableRow, start: Date): Date {
+  const end = new Date(`${row.date}T${row.endTime}:00`)
 
-  for (const indices of indicesByStage.values()) {
-    const sorted = [...indices].sort(
-      (a, b) => startTimes[a]!.getTime() - startTimes[b]!.getTime(),
-    )
-
-    for (let i = 0; i < sorted.length - 1; i++) {
-      const current = sorted[i]!
-      const next = sorted[i + 1]!
-      endTimes[current] = startTimes[next]!
-    }
+  if (end <= start) {
+    end.setDate(end.getDate() + 1)
   }
 
-  return endTimes
+  return end
 }
 
 function festivalSortKey(row: TimetableRow): number {

@@ -1,87 +1,85 @@
-Date,Day,Time,Stage,Artist,Notes
-2026-06-17,Wednesday,21:00,Cooking Groove,Vedat Akdağ,
-2026-06-17,Wednesday,23:00,Cooking Groove,Pachanga Boys,
-2026-06-18,Thursday,02:00,Cooking Groove,Radio Slave,
-2026-06-18,Thursday,04:00,Cooking Groove,Zvezda Beta,
-2026-06-18,Thursday,09:00,AM/Beach,Lutum,
-2026-06-18,Thursday,11:00,AM/Beach,Liro,
-2026-06-18,Thursday,13:00,AM/Beach,Krics & Parts Unknown,
-2026-06-18,Thursday,15:00,AM/Beach,Peter Bernath,
-2026-06-18,Thursday,18:30,AM/Beach,Ion Ludwig,
-2026-06-19,Friday,19:30,DAAD Stage,Opening Ceremony,
-2026-06-19,Friday,20:00,DAAD Stage,Charlotte de Witte,
-2026-06-19,Friday,21:30,DAAD Stage,Mode & Valens,
-2026-06-19,Friday,23:00,DAAD Stage,DJ Nobu & Dasha Rush,
-2026-06-19,Friday,01:00,DAAD Stage,Oscar Mulero,
-2026-06-19,Friday,03:00,DAAD Stage,Setaoc Mass,
-2026-06-19,Friday,05:00,DAAD Stage,Nastia,
-2026-06-19,Friday,21:00,The Dome,Li & Baco,
-2026-06-19,Friday,23:00,The Dome,Satoshi Tomiie,Live
-2026-06-19,Friday,00:00,The Dome,DJ Hell,
-2026-06-19,Friday,02:00,The Dome,Dresden,
-2026-06-19,Friday,04:30,The Dome,Manek & Tom Select,
-2026-06-19,Friday,06:00,The Dome,Kirill & Kernel,
-2026-06-19,Friday,21:30,Dragon Nest,Max Cooper,Live AV
-2026-06-19,Friday,23:00,Dragon Nest,Calibre,
-2026-06-19,Friday,01:30,Dragon Nest,Cadik,
-2026-06-19,Friday,05:00,Cooking Groove,Eff-ex,
-2026-06-19,Friday,11:05,Cooking Groove,Fury,
-2026-06-19,Friday,14:00,Cooking Groove,Fáni Bácsi,
-2026-06-19,Friday,09:00,AM/Beach,Moonbase Patel Disco,
-2026-06-19,Friday,12:00,AM/Beach,Ruenge,
-2026-06-19,Friday,14:00,AM/Beach,DJ Syncbutton,
-2026-06-19,Friday,16:00,AM/Beach,Galactic Jackson,
-2026-06-19,Friday,18:00,AM/Beach,Mind Enterprises,
-2026-06-20,Saturday,20:00,DAAD Stage,Cari Lekebusch,
-2026-06-20,Saturday,22:00,DAAD Stage,Cvrdwell,
-2026-06-20,Saturday,23:30,DAAD Stage,Colin Benders,Live
-2026-06-20,Saturday,01:00,DAAD Stage,Len Faki,
-2026-06-20,Saturday,03:00,DAAD Stage,Blawan,
-2026-06-20,Saturday,05:00,DAAD Stage,Hyperaktivist,
-2026-06-20,Saturday,21:00,The Dome,Maron,
-2026-06-20,Saturday,23:00,The Dome,Ben UFO,
-2026-06-20,Saturday,01:00,The Dome,Sepehr,Live
-2026-06-20,Saturday,02:30,The Dome,Daniel Avery,
-2026-06-20,Saturday,04:30,The Dome,Vatsanah,
-2026-06-20,Saturday,06:30,The Dome,Aurin,
-2026-06-20,Saturday,18:00,Dragon Nest,Palo Canto,
-2026-06-20,Saturday,19:30,Dragon Nest,Parallelle,
-2026-06-20,Saturday,21:30,Dragon Nest,Deer Jade,
-2026-06-20,Saturday,23:30,Dragon Nest,Be Svendsen,
-2026-06-20,Saturday,02:30,Dragon Nest,Meo Culpa & Baladi,
-2026-06-20,Saturday,08:00,Cooking Groove,Yorgos,
-2026-06-20,Saturday,12:00,Cooking Groove,Daniel Santiago,
-2026-06-20,Saturday,14:00,Cooking Groove,Daniel Ban,
-2026-06-20,Saturday,09:00,AM/Beach,Kele,
-2026-06-20,Saturday,11:30,AM/Beach,Knoll & Stark,
-2026-06-20,Saturday,14:00,AM/Beach,Octile,
-2026-06-20,Saturday,16:00,AM/Beach,Switch Nollie & Tsu,
-2026-06-20,Saturday,18:00,AM/Beach,Anunaku,
-2026-06-21,Sunday,20:00,DAAD Stage,The Advent,
-2026-06-21,Sunday,22:00,DAAD Stage,Aga2l,
-2026-06-21,Sunday,23:30,DAAD Stage,Kangding Ray,
-2026-06-21,Sunday,01:30,DAAD Stage,Rødhåd & Rene Wise,
-2026-06-21,Sunday,03:30,DAAD Stage,Fadi Mohem,
-2026-06-21,Sunday,05:00,DAAD Stage,Gigi FM,
-2026-06-21,Sunday,21:00,The Dome,Kin Teal,
-2026-06-21,Sunday,22:00,The Dome,Barker,Live
-2026-06-21,Sunday,23:00,The Dome,Lau,
-2026-06-21,Sunday,01:00,The Dome,Jakojako,Live
-2026-06-21,Sunday,02:30,The Dome,Adiel,
-2026-06-21,Sunday,04:30,The Dome,Isu,
-2026-06-21,Sunday,06:30,The Dome,Zituli Space Project,
-2026-06-21,Sunday,16:00,Dragon Nest,Geopard Tourist,
-2026-06-21,Sunday,19:30,Dragon Nest,Simple Symmetry,
-2026-06-21,Sunday,21:30,Dragon Nest,Vizare,
-2026-06-21,Sunday,23:30,Dragon Nest,Henrik Schwarz,Live
-2026-06-21,Sunday,01:30,Dragon Nest,Daniel Moritz,
-2026-06-21,Sunday,10:00,Cooking Groove,Jess,
-2026-06-21,Sunday,12:00,Cooking Groove,Kornwall,
-2026-06-21,Sunday,14:00,Cooking Groove,Peter Makto,
-2026-06-21,Sunday,09:00,AM/Beach,Jaffa Surfa,
-2026-06-21,Sunday,12:00,AM/Beach,Budai,
-2026-06-22,Monday,15:00,The Dome,Tolo & Falcao,
-2026-06-22,Monday,17:00,The Dome,Josh Wink,
-2026-06-22,Monday,19:30,Dragon Nest,Dominik Eulberg,
-2026-06-22,Monday,21:30,Dragon Nest,Gusgus,
-2026-06-22,Monday,12:00,Dragon Nest,Gate Closing,
+Date,Day,Time,End Time,Stage,Artist
+2026-06-17,Wednesday,21:00,23:00,Cooking Groove,Vedat Akdağ
+2026-06-17,Wednesday,23:00,02:00,Cooking Groove,Pachanga Boys
+2026-06-18,Thursday,02:00,04:00,Cooking Groove,Radio Slave
+2026-06-18,Thursday,04:00,06:00,Cooking Groove,Zvezda Beta
+2026-06-18,Thursday,09:00,11:00,Am/Beach,Lutum
+2026-06-18,Thursday,11:00,13:00,Am/Beach,Liro
+2026-06-18,Thursday,13:00,15:00,Am/Beach,Krics & Parts Unknown
+2026-06-18,Thursday,15:00,16:30,Am/Beach,Peter Bernath
+2026-06-18,Thursday,16:30,18:30,Am/Beach,Ion Ludwig
+2026-06-18,Thursday,20:00,21:30,DAAD Stage,Charlotte De Witte
+2026-06-18,Thursday,21:00,23:00,The Dome,Li & Baco
+2026-06-18,Thursday,21:30,23:30,Dragon Nest,Max Cooper (live) AV
+2026-06-18,Thursday,21:30,23:00,DAAD Stage,Mode & Valens
+2026-06-18,Thursday,23:00,01:00,DAAD Stage,Dj Nobu & Dasha Rush
+2026-06-18,Thursday,23:00,00:30,The Dome,Satoshi Tomi (live)
+2026-06-18,Thursday,23:30,01:30,Dragon Nest,Calibre
+2026-06-19,Friday,00:30,02:30,The Dome,Dj Hell
+2026-06-19,Friday,01:00,03:00,DAAD Stage,Oscar Mulero
+2026-06-19,Friday,01:30,03:30,Dragon Nest,Cadik
+2026-06-19,Friday,02:30,04:30,The Dome,Dresden
+2026-06-19,Friday,03:00,05:00,DAAD Stage,Setaoc Mass
+2026-06-19,Friday,04:30,06:30,The Dome,Manek & Tom Select
+2026-06-19,Friday,05:00,07:00,DAAD Stage,Nastia
+2026-06-19,Friday,06:30,09:00,The Dome,Kirill & Kernel
+2026-06-19,Friday,09:00,12:00,Am/Beach,Moonbase Patel Disco
+2026-06-19,Friday,10:00,12:00,Cooking Groove,EFF:EK aka Zakhorov x Fluidum
+2026-06-19,Friday,12:00,14:00,Cooking Groove,Fury
+2026-06-19,Friday,12:00,14:00,Am/Beach,Ruenge
+2026-06-19,Friday,14:00,16:00,Cooking Groove,Fáni Bácsi
+2026-06-19,Friday,14:00,16:00,Am/Beach,DJ Syncbutton
+2026-06-19,Friday,16:00,18:00,Am/Beach,Galactic Jackson
+2026-06-19,Friday,18:00,19:30,Dragon Nest,Palo Canto
+2026-06-19,Friday,18:00,20:00,Am/Beach,Mind Enterprises
+2026-06-19,Friday,19:30,21:30,Dragon Nest,Parallelle
+2026-06-19,Friday,20:00,22:00,DAAD Stage,Cari Lekebusch
+2026-06-19,Friday,21:00,23:00,The Dome,Maron
+2026-06-19,Friday,21:30,23:30,Dragon Nest,Deer Jade
+2026-06-19,Friday,22:00,23:30,DAAD Stage,Cvrdwell
+2026-06-19,Friday,23:00,01:00,The Dome,Ben Ufo
+2026-06-19,Friday,23:30,01:30,Dragon Nest,Be Svendsen
+2026-06-19,Friday,23:30,01:00,DAAD Stage,Colin Benders (live)
+2026-06-20,Saturday,01:00,03:00,DAAD Stage,Len Faki
+2026-06-20,Saturday,01:00,02:30,The Dome,Sepehr (live)
+2026-06-20,Saturday,01:30,03:30,Dragon Nest,Meo Culpa & Baladi
+2026-06-20,Saturday,02:30,04:30,The Dome,Daniel Avery
+2026-06-20,Saturday,03:00,05:00,DAAD Stage,Blawan
+2026-06-20,Saturday,04:30,06:30,The Dome,Vatsanah
+2026-06-20,Saturday,05:00,07:00,DAAD Stage,Hyperaktivist
+2026-06-20,Saturday,06:30,09:00,The Dome,Aurin
+2026-06-20,Saturday,09:00,11:30,Am/Beach,Kele
+2026-06-20,Saturday,10:00,12:00,Cooking Groove,Yorgos
+2026-06-20,Saturday,11:30,14:00,Am/Beach,Knoll & Stark
+2026-06-20,Saturday,12:00,14:00,Cooking Groove,Daniel Santiago
+2026-06-20,Saturday,14:00,16:00,Cooking Groove,Daniel Ban
+2026-06-20,Saturday,14:00,16:00,Am/Beach,Octile
+2026-06-20,Saturday,16:00,18:00,Am/Beach,Switch Nollie & Tsu
+2026-06-20,Saturday,18:00,19:30,Dragon Nest,Geopard Tourist
+2026-06-20,Saturday,18:00,20:00,Am/Beach,Anunaku
+2026-06-20,Saturday,19:30,21:30,Dragon Nest,Simple Symmetry
+2026-06-20,Saturday,20:00,22:00,DAAD Stage,The Advent
+2026-06-20,Saturday,21:00,22:00,The Dome,Kin Teal
+2026-06-20,Saturday,21:30,23:30,Dragon Nest,VIZARE / Viken Arman & Cesar Merveille
+2026-06-20,Saturday,22:00,23:30,DAAD Stage,Aga2L
+2026-06-20,Saturday,22:00,23:00,The Dome,Barker (live)
+2026-06-20,Saturday,23:00,01:00,The Dome,Lau
+2026-06-20,Saturday,23:30,01:30,Dragon Nest,Henrik Schwarz (live)
+2026-06-20,Saturday,23:30,01:30,DAAD Stage,Kangding Ray
+2026-06-21,Sunday,01:00,02:30,The Dome,JakoJako (live)
+2026-06-21,Sunday,01:30,03:30,Dragon Nest,Daniel Moritz
+2026-06-21,Sunday,01:30,03:30,DAAD Stage,Rodhad & Rene Wise
+2026-06-21,Sunday,02:30,04:30,The Dome,Adiel
+2026-06-21,Sunday,03:30,05:00,DAAD Stage,Fadi Mohem
+2026-06-21,Sunday,04:30,06:30,The Dome,Isu
+2026-06-21,Sunday,05:00,07:00,DAAD Stage,Gigi FM
+2026-06-21,Sunday,06:30,09:00,The Dome,Zituli Space Project
+2026-06-21,Sunday,09:00,12:00,Am/Beach,Jaffa Surfa
+2026-06-21,Sunday,10:00,12:00,Cooking Groove,Jess
+2026-06-21,Sunday,12:00,14:00,Cooking Groove,Kornwall
+2026-06-21,Sunday,12:00,15:00,Am/Beach,Budai
+2026-06-21,Sunday,14:00,16:00,Cooking Groove,Peter Makto
+2026-06-21,Sunday,15:00,17:00,The Dome,Tolo & Falcao
+2026-06-21,Sunday,17:00,20:00,The Dome,Josh Wink
+2026-06-21,Sunday,19:30,21:30,Dragon Nest,Dominik Eulberg
+2026-06-21,Sunday,21:30,23:30,Dragon Nest,GusGus

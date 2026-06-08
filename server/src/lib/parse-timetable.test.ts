@@ -12,12 +12,23 @@ describe('parseTimetableCsv', () => {
     const content = readFileSync(csvPath, 'utf-8')
     const slots = parseTimetableCsv(content)
 
-    expect(slots).toHaveLength(86)
+    expect(slots).toHaveLength(84)
     expect(slots[0]).toMatchObject({
       artist: 'Vedat Akdağ',
       stage: 'Cooking Groove',
       day: 'Wednesday',
     })
+    expect(slots[0]!.endTime).toEqual(new Date('2026-06-17T23:00:00'))
+  })
+
+  it('normalizes Am/Beach to AM/Beach', () => {
+    const content = readFileSync(csvPath, 'utf-8')
+    const slots = parseTimetableCsv(content)
+
+    expect(slots.every((slot) => slot.stage !== 'Am/Beach')).toBe(true)
+    expect(slots.find((slot) => slot.artist === 'Lutum')?.stage).toBe(
+      'AM/Beach',
+    )
   })
 
   it('rolls after-midnight slots forward per stage', () => {
@@ -25,20 +36,23 @@ describe('parseTimetableCsv', () => {
     const slots = parseTimetableCsv(content)
 
     const oscar = slots.find((slot) => slot.artist === 'Oscar Mulero')
-    const charlotte = slots.find((slot) => slot.artist === 'Charlotte de Witte')
+    const charlotte = slots.find((slot) =>
+      slot.artist.includes('Charlotte De Witte'),
+    )
 
     expect(oscar?.startTime.getTime()).toBeGreaterThan(
       charlotte!.startTime.getTime(),
     )
   })
 
-  it('ends a slot when the next one on the same stage starts', () => {
+  it('uses end times from the CSV', () => {
     const content = readFileSync(csvPath, 'utf-8')
     const slots = parseTimetableCsv(content)
 
-    const charlotte = slots.find((slot) => slot.artist === 'Charlotte de Witte')
-    const mode = slots.find((slot) => slot.artist === 'Mode & Valens')
+    const nastia = slots.find((slot) => slot.artist === 'Nastia')
+    const pachanga = slots.find((slot) => slot.artist === 'Pachanga Boys')
 
-    expect(charlotte?.endTime).toEqual(mode?.startTime)
+    expect(nastia?.endTime).toEqual(new Date('2026-06-20T07:00:00'))
+    expect(pachanga?.endTime).toEqual(new Date('2026-06-18T02:00:00'))
   })
 })
